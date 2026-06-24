@@ -8,10 +8,10 @@
 <title>POLEVOY SCREENER</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#080b14;color:#c8d6e8;font-family:'JetBrains Mono','Fira Code',monospace;height:100vh;overflow:hidden}
+body{background:#0d1119;color:#c8d6e8;font-family:'JetBrains Mono','Fira Code',monospace;height:100vh;overflow:hidden}
 #app{display:flex;flex-direction:column;height:100vh}
-#hdr{background:#0c0f1a;border-bottom:1px solid #131a2e;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:8px;flex-wrap:wrap}
-#flt{padding:5px 16px;background:#0a0d18;border-bottom:1px solid #0e1525;display:flex;gap:4px;flex-wrap:wrap;flex-shrink:0;align-items:center}
+#hdr{background:#131920;border-bottom:1px solid #131a2e;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:8px;flex-wrap:wrap}
+#flt{padding:5px 16px;background:#111620;border-bottom:1px solid #0e1525;display:flex;gap:4px;flex-wrap:wrap;flex-shrink:0;align-items:center}
 .fb,.tab-btn{background:transparent;border:1px solid #1e2740;color:#7c93b8;padding:3px 8px;font-size:10px;font-family:inherit;border-radius:3px;cursor:pointer;transition:all .12s}
 .fb:hover,.tab-btn:hover{border-color:#2a3d60;color:#c8d6e8}
 .fb.on{background:rgba(163,230,53,.08);border-color:#a3e635;color:#a3e635}
@@ -19,11 +19,11 @@ body{background:#080b14;color:#c8d6e8;font-family:'JetBrains Mono','Fira Code',m
 .sep{width:1px;height:14px;background:#1e2740;margin:0 4px;flex-shrink:0}
 #scroll{flex:1;overflow-y:scroll;overflow-x:hidden;min-height:0}
 #scroll::-webkit-scrollbar{width:8px}
-#scroll::-webkit-scrollbar-track{background:#0c0f1a}
+#scroll::-webkit-scrollbar-track{background:#131920}
 #scroll::-webkit-scrollbar-thumb{background:#253550;border-radius:4px;cursor:pointer}
 #scroll::-webkit-scrollbar-thumb:hover{background:#3d5080}
 /* BIG CHART */
-#bigwrap{background:#0a0d18;border-bottom:1px solid #131a2e}
+#bigwrap{background:#111620;border-bottom:1px solid #131a2e}
 #chdr{padding:8px 16px;display:flex;align-items:center;gap:10px;min-height:38px;flex-wrap:wrap}
 #no-sel{color:#5c7099;font-size:12px}
 #cinfo{display:none;align-items:baseline;gap:8px;flex-wrap:wrap}
@@ -49,12 +49,12 @@ body{background:#080b14;color:#c8d6e8;font-family:'JetBrains Mono','Fira Code',m
 .strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;cursor:grab;user-select:none;min-height:100px;align-items:flex-start}
 .strip:active{cursor:grabbing}
 .strip::-webkit-scrollbar{height:7px}
-.strip::-webkit-scrollbar-track{background:#0c0f1a;border-radius:4px}
+.strip::-webkit-scrollbar-track{background:#131920;border-radius:4px}
 .strip::-webkit-scrollbar-thumb{background:#253550;border-radius:4px}
 .strip::-webkit-scrollbar-thumb:hover{background:#3d5080}
 .strip-empty{color:#7c93b8;font-size:11px;padding:14px 0;white-space:nowrap;align-self:center}
 /* CARD */
-.card{background:#0a0d18;border:1px solid #131a2e;border-radius:5px;cursor:pointer;overflow:hidden;flex-shrink:0;width:200px;transition:border-color .12s}
+.card{background:#111620;border:1px solid #131a2e;border-radius:5px;cursor:pointer;overflow:hidden;flex-shrink:0;width:200px;transition:border-color .12s}
 .card:hover{border-color:#2a3d60}.card.sel{border-color:#a3e635;box-shadow:0 0 0 1px #a3e635 inset}
 .card.synth-card{border-color:#1a1f35}
 .card-top{display:flex;justify-content:space-between;align-items:center;padding:5px 7px 1px}
@@ -68,7 +68,7 @@ body{background:#080b14;color:#c8d6e8;font-family:'JetBrains Mono','Fira Code',m
 /* GRID */
 #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:7px;padding-bottom:16px}
 ::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:#080b14}
+::-webkit-scrollbar-track{background:#0d1119}
 ::-webkit-scrollbar-thumb{background:#1e2740;border-radius:2px}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 </style>
@@ -137,19 +137,19 @@ body{background:#080b14;color:#c8d6e8;font-family:'JetBrains Mono','Fira Code',m
 
     <!-- SITUATIONS (always visible, crypto + stocks mixed) -->
     <div class="sect">
-      <div class="sect-hdr"><span class="dot" style="background:#f59e0b;animation:pulse 2s infinite"></span>ПАМП / ДАМП <span style="color:#5c7099;font-size:9px;font-weight:400">(резкий рост или падение цены)</span><span class="sect-cnt" id="cnt-pd"></span><span class="sect-thr">— движение за ~10м ≥3%</span><div class="sec-tfs" data-sec="pd"><button class="stf" data-tf="1m">1м</button><button class="stf" data-tf="5m">5м</button><button class="stf" data-tf="15m">15м</button><button class="stf on" data-tf="1h">1ч</button><button class="stf" data-tf="4h">4ч</button><button class="stf" data-tf="1d">1д</button></div></div>
+      <div class="sect-hdr"><span class="dot" style="background:#f59e0b;animation:pulse 2s infinite"></span>ПАМП / ДАМП <span style="color:#8899bb;font-size:9px;font-weight:400">(резкий рост или падение цены)</span><span class="sect-cnt" id="cnt-pd"></span><span class="sect-thr">— движение за ~10м ≥3%</span><div class="sec-tfs" data-sec="pd"><button class="stf" data-tf="1m">1м</button><button class="stf" data-tf="5m">5м</button><button class="stf" data-tf="15m">15м</button><button class="stf on" data-tf="1h">1ч</button><button class="stf" data-tf="4h">4ч</button><button class="stf" data-tf="1d">1д</button></div></div>
       <div class="strip" id="strip-pd"><div class="strip-empty">Загрузка…</div></div>
     </div>
     <div class="sect">
-      <div class="sect-hdr"><span class="dot" style="background:#ef4444;animation:pulse 1.5s infinite"></span>КРУПНЫЕ ЛИКВИДАЦИИ <span style="color:#5c7099;font-size:9px;font-weight:400">(ликвидирован крупный объём — часто сигнал разворота)</span><span class="sect-cnt" id="cnt-liq"></span><span class="sect-thr" id="liq-src">— Binance forced orders / wick detection</span><div class="sec-tfs" data-sec="liq"><button class="stf" data-tf="1m">1м</button><button class="stf" data-tf="5m">5м</button><button class="stf" data-tf="15m">15м</button><button class="stf on" data-tf="1h">1ч</button><button class="stf" data-tf="4h">4ч</button><button class="stf" data-tf="1d">1д</button></div></div>
+      <div class="sect-hdr"><span class="dot" style="background:#ef4444;animation:pulse 1.5s infinite"></span>КРУПНЫЕ ЛИКВИДАЦИИ <span style="color:#8899bb;font-size:9px;font-weight:400">(ликвидирован крупный объём — часто сигнал разворота)</span><span class="sect-cnt" id="cnt-liq"></span><span class="sect-thr" id="liq-src">— Binance forced orders / wick detection</span><div class="sec-tfs" data-sec="liq"><button class="stf" data-tf="1m">1м</button><button class="stf" data-tf="5m">5м</button><button class="stf" data-tf="15m">15м</button><button class="stf on" data-tf="1h">1ч</button><button class="stf" data-tf="4h">4ч</button><button class="stf" data-tf="1d">1д</button></div></div>
       <div class="strip" id="strip-liq"><div class="strip-empty">Загрузка…</div></div>
     </div>
     <div class="sect">
-      <div class="sect-hdr"><span class="dot" style="background:#c084fc"></span>ОТКРЫТЫЙ ИНТЕРЕС <span style="color:#5c7099;font-size:9px;font-weight:400">(крупный объём входит или выходит из монеты)</span><span class="sect-cnt" id="cnt-oi"></span><span class="sect-thr" id="oi-src">— MEXC Contract OI (накапливается через localStorage)</span><div class="sec-tfs" data-sec="oi"><button class="stf" data-tf="1m">1м</button><button class="stf" data-tf="5m">5м</button><button class="stf" data-tf="15m">15м</button><button class="stf on" data-tf="1h">1ч</button><button class="stf" data-tf="4h">4ч</button><button class="stf" data-tf="1d">1д</button></div></div>
+      <div class="sect-hdr"><span class="dot" style="background:#c084fc"></span>ОТКРЫТЫЙ ИНТЕРЕС <span style="color:#8899bb;font-size:9px;font-weight:400">(крупный объём входит или выходит из монеты)</span><span class="sect-cnt" id="cnt-oi"></span><span class="sect-thr" id="oi-src">— MEXC Contract OI (накапливается через localStorage)</span><div class="sec-tfs" data-sec="oi"><button class="stf" data-tf="1m">1м</button><button class="stf" data-tf="5m">5м</button><button class="stf" data-tf="15m">15м</button><button class="stf on" data-tf="1h">1ч</button><button class="stf" data-tf="4h">4ч</button><button class="stf" data-tf="1d">1д</button></div></div>
       <div class="strip" id="strip-oi"><div class="strip-empty" id="oi-empty-msg">Загрузка…</div></div>
     </div>
     <div class="sect">
-      <div class="sect-hdr"><span class="dot" style="background:#fb923c"></span>RSI СИТУАЦИИ <span style="color:#5c7099;font-size:9px;font-weight:400">(перекупленность: &gt;70 перекуплен · &lt;30 перепродан)</span><span class="sect-cnt" id="cnt-rsi"></span><span class="sect-thr">— RSI >72 / <28 или сдвиг ≥15пт</span><div class="sec-tfs" data-sec="rsi"><button class="stf" data-tf="1m">1м</button><button class="stf" data-tf="5m">5м</button><button class="stf" data-tf="15m">15м</button><button class="stf on" data-tf="1h">1ч</button><button class="stf" data-tf="4h">4ч</button><button class="stf" data-tf="1d">1д</button></div></div>
+      <div class="sect-hdr"><span class="dot" style="background:#fb923c"></span>RSI СИТУАЦИИ <span style="color:#8899bb;font-size:9px;font-weight:400">(перекупленность: &gt;70 перекуплен · &lt;30 перепродан)</span><span class="sect-cnt" id="cnt-rsi"></span><span class="sect-thr">— RSI >72 / <28 или сдвиг ≥15пт</span><div class="sec-tfs" data-sec="rsi"><button class="stf" data-tf="1m">1м</button><button class="stf" data-tf="5m">5м</button><button class="stf" data-tf="15m">15м</button><button class="stf on" data-tf="1h">1ч</button><button class="stf" data-tf="4h">4ч</button><button class="stf" data-tf="1d">1д</button></div></div>
       <div class="strip" id="strip-rsi"><div class="strip-empty">Загрузка RSI…</div></div>
     </div>
 
@@ -418,7 +418,11 @@ function renderAll(){
 
   // 5. CRYPTO GRID
   const gridC=coins.filter(c=>(filter==='ALL'||getSigs(c).includes(filter)))
-    .sort((a,b)=>{const sa=getSigs(a).length,sb=getSigs(b).length;if(sb!==sa)return sb-sa;return Math.abs(parseFloat(b.priceChangePercent))-Math.abs(parseFloat(a.priceChangePercent))});
+    .sort((a,b)=>{
+      const sa=getSigs(a).length,sb=getSigs(b).length;
+      if(sb!==sa)return sb-sa; // сигналы первыми
+      return parseFloat(b.quoteVolume)-parseFloat(a.quoteVolume); // затем по объёму: BTC,ETH,SOL...
+    });
   document.getElementById('cnt-grid').textContent=`(${gridC.length})`;
   const gk=gridC.map(c=>c.symbol).join(',');
   const gridEl=document.getElementById('grid');
@@ -825,7 +829,7 @@ async function fetchLiquidations(){
 // ── BIG CHART ────────────────────────────────────────────
 // Timestamps are MSK-shifted (+3h) so LightweightCharts displays MSK time correctly
 const BOPTS={
-  layout:{background:{color:'#080b14'},textColor:'#4a6080'},
+  layout:{background:{color:'#0d1119'},textColor:'#4a6080'},
   grid:{vertLines:{color:'#0e1525'},horzLines:{color:'#0e1525'}},
   crosshair:{mode:1},
   rightPriceScale:{borderColor:'#131a2e'},
@@ -842,11 +846,11 @@ function initBig(){
   try{
     bigChart=LightweightCharts.createChart(mc,{
       width:W,height:270,
-      layout:{background:{color:'#080b14'},textColor:'#c8d6e8'},
+      layout:{background:{color:'#0d1119'},textColor:'#c8d6e8'},
       grid:{vertLines:{color:'#0e1525'},horzLines:{color:'#0e1525'}},
       crosshair:{mode:1},rightPriceScale:{borderColor:'#131a2e'},
-      // Time axis hidden here — shown only under RSI below
       timeScale:{borderColor:'#131a2e',timeVisible:false,visible:false},
+      localization:{timeFormatter:(t)=>{const d=new Date(t*1000);return('0'+d.getUTCHours()).slice(-2)+':'+('0'+d.getUTCMinutes()).slice(-2);}},
       handleScroll:true,handleScale:true
     });
     bigCandle=bigChart.addCandlestickSeries({
@@ -856,12 +860,12 @@ function initBig(){
     });
     rsiChart=LightweightCharts.createChart(rc,{
       width:W,height:110,
-      layout:{background:{color:'#080b14'},textColor:'#c8d6e8'},
+      layout:{background:{color:'#0d1119'},textColor:'#c8d6e8'},
       grid:{vertLines:{color:'#0e1525'},horzLines:{color:'#0e1525'}},
       crosshair:{mode:1},
       rightPriceScale:{borderColor:'#131a2e',scaleMargins:{top:0.1,bottom:0.1}},
-      // Time axis shown HERE so labels appear below RSI (not overlapping main chart)
       timeScale:{borderColor:'#131a2e',timeVisible:true,secondsVisible:false},
+      localization:{timeFormatter:(t)=>{const d=new Date(t*1000);const h=('0'+d.getUTCHours()).slice(-2);const m=('0'+d.getUTCMinutes()).slice(-2);return h+':'+m;}},
       handleScroll:true,handleScale:true
     });
     rsiLine=rsiChart.addLineSeries({color:'#a3e635',lineWidth:1,priceLineVisible:false,lastValueVisible:true});
