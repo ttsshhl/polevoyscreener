@@ -32,6 +32,10 @@ body{background:#080b14;color:#c8d6e8;font-family:'JetBrains Mono','Fira Code',m
 #tfs{display:flex;gap:4px;margin-left:auto}
 .tf{background:transparent;border:1px solid #1e2740;color:#7c93b8;padding:3px 8px;font-size:10px;font-family:inherit;border-radius:3px;cursor:pointer}
 .tf:hover{color:#c8d6e8;border-color:#4a6080}.tf.on{background:rgba(163,230,53,.15);border-color:#a3e635;color:#a3e635;font-weight:700}
+.sec-tfs{display:flex;gap:2px;margin-left:auto;flex-shrink:0}
+.stf{background:transparent;border:1px solid #1e2740;color:#5c7099;padding:2px 6px;font-size:9px;font-family:inherit;border-radius:3px;cursor:pointer;transition:all .12s}
+.stf:hover{color:#c8d6e8;border-color:#4a6080}
+.stf.on{background:#fbbf24;border-color:#fbbf24;color:#000;font-weight:700}
 #bigcharts{display:none;flex-direction:column;height:380px}
 #mc{flex:2;min-height:0;height:270px}#rcdiv{flex:1;min-height:0;height:110px;position:relative;border-top:1px solid #0e1525}#rc{width:100%;height:100%}
 
@@ -133,26 +137,26 @@ body{background:#080b14;color:#c8d6e8;font-family:'JetBrains Mono','Fira Code',m
 
     <!-- SITUATIONS (always visible, crypto + stocks mixed) -->
     <div class="sect">
-      <div class="sect-hdr"><span class="dot" style="background:#f59e0b;animation:pulse 2s infinite"></span>ПАМП / ДАМП<span class="sect-cnt" id="cnt-pd"></span><span class="sect-thr">— движение за ~10м ≥3%</span></div>
+      <div class="sect-hdr"><span class="dot" style="background:#f59e0b;animation:pulse 2s infinite"></span>ПАМП / ДАМП<span class="sect-cnt" id="cnt-pd"></span><span class="sect-thr">— движение за ~10м ≥3%</span><div class="sec-tfs" data-sec="pd"><button class="stf" data-tf="1m">1м</button><button class="stf" data-tf="5m">5м</button><button class="stf" data-tf="15m">15м</button><button class="stf on" data-tf="1h">1ч</button><button class="stf" data-tf="4h">4ч</button><button class="stf" data-tf="1d">1д</button></div></div>
       <div class="strip" id="strip-pd"><div class="strip-empty">Загрузка…</div></div>
     </div>
     <div class="sect">
-      <div class="sect-hdr"><span class="dot" style="background:#ef4444;animation:pulse 1.5s infinite"></span>КРУПНЫЕ ЛИКВИДАЦИИ<span class="sect-cnt" id="cnt-liq"></span><span class="sect-thr" id="liq-src">— Binance forced orders / wick detection</span></div>
+      <div class="sect-hdr"><span class="dot" style="background:#ef4444;animation:pulse 1.5s infinite"></span>КРУПНЫЕ ЛИКВИДАЦИИ<span class="sect-cnt" id="cnt-liq"></span><span class="sect-thr" id="liq-src">— Binance forced orders / wick detection</span><div class="sec-tfs" data-sec="liq"><button class="stf" data-tf="1m">1м</button><button class="stf" data-tf="5m">5м</button><button class="stf" data-tf="15m">15м</button><button class="stf on" data-tf="1h">1ч</button><button class="stf" data-tf="4h">4ч</button><button class="stf" data-tf="1d">1д</button></div></div>
       <div class="strip" id="strip-liq"><div class="strip-empty">Загрузка…</div></div>
     </div>
     <div class="sect">
-      <div class="sect-hdr"><span class="dot" style="background:#c084fc"></span>ОТКРЫТЫЙ ИНТЕРЕС<span class="sect-cnt" id="cnt-oi"></span><span class="sect-thr" id="oi-src">— MEXC Contract OI (накапливается через localStorage)</span></div>
+      <div class="sect-hdr"><span class="dot" style="background:#c084fc"></span>ОТКРЫТЫЙ ИНТЕРЕС<span class="sect-cnt" id="cnt-oi"></span><span class="sect-thr" id="oi-src">— MEXC Contract OI (накапливается через localStorage)</span><div class="sec-tfs" data-sec="oi"><button class="stf" data-tf="1m">1м</button><button class="stf" data-tf="5m">5м</button><button class="stf" data-tf="15m">15м</button><button class="stf on" data-tf="1h">1ч</button><button class="stf" data-tf="4h">4ч</button><button class="stf" data-tf="1d">1д</button></div></div>
       <div class="strip" id="strip-oi"><div class="strip-empty" id="oi-empty-msg">Загрузка…</div></div>
     </div>
     <div class="sect">
-      <div class="sect-hdr"><span class="dot" style="background:#fb923c"></span>RSI СИТУАЦИИ<span class="sect-cnt" id="cnt-rsi"></span><span class="sect-thr">— RSI >72 / <28 или сдвиг ≥15пт</span></div>
+      <div class="sect-hdr"><span class="dot" style="background:#fb923c"></span>RSI СИТУАЦИИ<span class="sect-cnt" id="cnt-rsi"></span><span class="sect-thr">— RSI >72 / <28 или сдвиг ≥15пт</span><div class="sec-tfs" data-sec="rsi"><button class="stf" data-tf="1m">1м</button><button class="stf" data-tf="5m">5м</button><button class="stf" data-tf="15m">15м</button><button class="stf on" data-tf="1h">1ч</button><button class="stf" data-tf="4h">4ч</button><button class="stf" data-tf="1d">1д</button></div></div>
       <div class="strip" id="strip-rsi"><div class="strip-empty">Загрузка RSI…</div></div>
     </div>
 
     <!-- CRYPTO TAB -->
     <div id="panel-crypto">
       <div class="sect" style="padding-top:10px">
-        <div class="sect-hdr"><span class="dot" style="background:#5c7099"></span>ВСЕ МОНЕТЫ<span class="sect-cnt" id="cnt-grid"></span><span class="sect-thr" id="grid-tf-label">— графики 1ч · мини-чарты обновляются в реальном времени</span></div>
+        <div class="sect-hdr"><span class="dot" style="background:#5c7099"></span>ВСЕ МОНЕТЫ<span class="sect-cnt" id="cnt-grid"></span><span class="sect-thr" id="grid-tf-label">— графики 1ч · мини-чарты обновляются в реальном времени</span><div class="sec-tfs" data-sec="grid"><button class="stf" data-tf="1m">1м</button><button class="stf" data-tf="5m">5м</button><button class="stf" data-tf="15m">15м</button><button class="stf on" data-tf="1h">1ч</button><button class="stf" data-tf="4h">4ч</button><button class="stf" data-tf="1d">1д</button></div></div>
         <div id="grid"></div>
       </div>
     </div>
@@ -172,12 +176,7 @@ body{background:#080b14;color:#c8d6e8;font-family:'JetBrains Mono','Fira Code',m
 'use strict';
 const MEXC    = 'https://api.mexc.com/api/v3';
 const MEXCC   = 'https://contract.mexc.com/api/v1/contract';
-// Авто-выбор прокси: если открыт на сервере — используем собственный /api-proxy
-// Это решает проблему блокировок без VPN у пользователя
-const IS_LOCAL = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-const PROXY = IS_LOCAL
-  ? 'https://corsproxy.io/?'
-  : '/api-proxy?url=';  // серверный прокси — запросы идут с сервера, не из браузера
+const PROXY   = 'https://corsproxy.io/?';
 const WS_URL  = 'wss://wbs.mexc.com/ws';
 const TF_WS   = {'1m':'Min1','5m':'Min5','15m':'Min15','30m':'Min30','1h':'Min60','4h':'Hour4','1d':'Day1'};
 const MEXC_TF = {'1m':'1m','15m':'15m','1h':'60m','4h':'4h','1d':'1d'};
@@ -200,6 +199,11 @@ let priceWS=null, selWS=null, selWSTimer=null;
 let refs={grid:{},stocks:{},pd:{},liq:{},oi:{},rsi:{}};
 let keys={grid:null,stocks:null,pd:null,liq:null,oi:null,rsi:null};
 let useProxy=false;
+const sectionTf={pd:'1h',liq:'1h',oi:'1h',rsi:'1h',grid:'1h',stocks:'1h'};
+const tfCache={}; // tfCache[sym][tf]=bars
+const TF_INTERVAL={'1m':'1m','5m':'5m','15m':'15m','1h':'60m','4h':'4h','1d':'1d'};
+function getTfBars(sym,tf){return tf==='1h'?candleMap[sym]:tfCache[sym]?.[tf];}
+function setTfBars(sym,tf,bars){if(tf==='1h'){candleMap[sym]=bars;return;}if(!tfCache[sym])tfCache[sym]={};tfCache[sym][tf]=bars;}
 let _oiEmptyMsg='Загрузка OI…';
 
 // ── LAZY CHART OBSERVER ──────────────────────────────────
@@ -581,6 +585,71 @@ async function fetchSynthetics(){
 function oiLoad(){try{const s=localStorage.getItem(OI_LS_KEY);return s?JSON.parse(s):[]}catch{return[]}}
 function oiSave(snaps){try{localStorage.setItem(OI_LS_KEY,JSON.stringify(snaps.slice(-60)))}catch{}}
 
+// ── SECTION TIMEFRAME SWITCHING ─────────────────────────
+async function fetchTfBatch(syms,tf,secId){
+  const el=document.getElementById('st-charts');
+  const interval=TF_INTERVAL[tf]||'60m';
+  for(let i=0;i<syms.length;i+=6){
+    if(el){el.textContent=`[${secId}] ${tf} ${Math.min(i+6,syms.length)}/${syms.length}`;el.style.color='#f59e0b';}
+    await Promise.all(syms.slice(i,i+6).map(async sym=>{
+      if(getTfBars(sym,tf)?.length)return; // already cached
+      try{
+        const synthCo=synthCoins.find(co=>co.symbol===sym);
+        let bars=null;
+        if(synthCo){
+          const j=await tFetchJ(`${MEXCC}/kline/${synthCo._futSym}?interval=${interval}&limit=100`,5000);
+          const d=j?.data;
+          if(d?.time&&d?.close)
+            bars=d.time.map((t2,ix)=>({time:toMsk(Math.floor(t2/1000)||t2),open:parseFloat(d.open[ix]),high:parseFloat(d.high[ix]),low:parseFloat(d.low[ix]),close:parseFloat(d.close[ix])}));
+        }else{
+          const k=await fetchAuto(`${MEXC}/klines?symbol=${sym}&interval=${interval}&limit=100`);
+          if(Array.isArray(k)){
+            const seen=new Set();
+            bars=k.map(x=>({time:toMsk(Math.floor(parseInt(x[0])/1000)),open:parseFloat(x[1]),high:parseFloat(x[2]),low:parseFloat(x[3]),close:parseFloat(x[4])}))
+              .filter(b=>b.time>0&&b.close>0&&!isNaN(b.close)&&!seen.has(b.time)&&seen.add(b.time))
+              .sort((a,b)=>a.time-b.time);
+          }
+        }
+        if(bars?.length)setTfBars(sym,tf,bars);
+      }catch(e){console.warn('fetchTfBatch',sym,tf,e.message)}
+    }));
+    // Update charts for this batch
+    syms.slice(i,i+6).forEach(sym=>{
+      const bars=getTfBars(sym,tf);
+      if(!bars?.length)return;
+      const r=(refs[secId]||{})[sym];
+      if(r?.series&&r.chartInited){
+        try{r.series.setData(bars);r.chart.timeScale().fitContent();}catch(e){}
+      }
+    });
+  }
+  if(el){el.textContent='Графики ✓';el.style.color='#4a6080';}
+}
+
+async function switchSectionTf(secId,tf){
+  sectionTf[secId]=tf;
+  // Update button styles
+  document.querySelectorAll(`.sec-tfs[data-sec="${secId}"] .stf`).forEach(b=>{
+    b.classList.toggle('on',b.dataset.tf===tf);
+  });
+  // Get all coins currently in this section
+  const ro=refs[secId]||{};
+  const syms=Object.keys(ro);
+  if(!syms.length){console.warn('switchSectionTf: no coins in section',secId);return;}
+  console.log('Switching',secId,'to',tf,'for',syms.length,'coins');
+  // Immediately show cached bars
+  syms.forEach(sym=>{
+    const bars=getTfBars(sym,tf);
+    if(!bars?.length)return;
+    const r=ro[sym];
+    if(r?.series&&r.chartInited)try{r.series.setData(bars);r.chart.timeScale().fitContent()}catch{}
+  });
+  // Fetch what we don't have yet
+  const missing=syms.filter(sym=>!getTfBars(sym,tf)?.length);
+  console.log('Need to fetch',missing.length,'coins for TF',tf);
+  if(missing.length)await fetchTfBatch(missing,tf,secId);
+}
+
 async function fetchOI(){
   const el=document.getElementById('st-oi');
   el.textContent='OI…';el.style.color='#f59e0b';
@@ -944,7 +1013,11 @@ function pushCandlesToRefs(sym){
     const r=ro[sym];
     if(!r)continue;
     if(r.chartInited&&r.series){
-      try{r.series.setData(bars);r.chart.timeScale().fitContent()}catch{}
+      // Use section-specific TF if different from 1h
+      const secId=Object.keys(refs).find(k=>refs[k]===ro);
+      const secBars=(secId&&sectionTf[secId]&&sectionTf[secId]!=='1h')
+        ?getTfBars(sym,sectionTf[secId])??bars:bars;
+      try{r.series.setData(secBars);r.chart.timeScale().fitContent()}catch{}
     }else if(!r.chartInited&&r.root){
       const rect=r.root.getBoundingClientRect();
       const sRect=scrollEl?scrollEl.getBoundingClientRect():{top:0,bottom:window.innerHeight};
@@ -1023,6 +1096,16 @@ document.getElementById('tfs').addEventListener('click',e=>{
 // ── BOOT ─────────────────────────────────────────────────
 (async()=>{
   // Search input listener
+  // Section TF button handler — added here for reliable scope
+  document.querySelectorAll('.sec-tfs').forEach(group=>{
+    group.querySelectorAll('.stf').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const sec=group.dataset.sec;
+        const tf=btn.dataset.tf;
+        if(sec&&tf)switchSectionTf(sec,tf);
+      });
+    });
+  });
   ['strip-pd','strip-liq','strip-oi','strip-rsi'].forEach(id=>initStrip(document.getElementById(id)));
   document.getElementById('upd').textContent='Подключение к MEXC…';
   try{
