@@ -137,19 +137,19 @@ body{background:#080b14;color:#c8d6e8;font-family:'JetBrains Mono','Fira Code',m
 
     <!-- SITUATIONS (always visible, crypto + stocks mixed) -->
     <div class="sect">
-      <div class="sect-hdr"><span class="dot" style="background:#f59e0b;animation:pulse 2s infinite"></span>ПАМП / ДАМП<span class="sect-cnt" id="cnt-pd"></span><span class="sect-thr">— движение за ~10м ≥3%</span><div class="sec-tfs" data-sec="pd"><button class="stf" data-tf="1m">1м</button><button class="stf" data-tf="5m">5м</button><button class="stf" data-tf="15m">15м</button><button class="stf on" data-tf="1h">1ч</button><button class="stf" data-tf="4h">4ч</button><button class="stf" data-tf="1d">1д</button></div></div>
+      <div class="sect-hdr"><span class="dot" style="background:#f59e0b;animation:pulse 2s infinite"></span>ПАМП / ДАМП <span style="color:#5c7099;font-size:9px;font-weight:400">(резкий рост или падение цены)</span><span class="sect-cnt" id="cnt-pd"></span><span class="sect-thr">— движение за ~10м ≥3%</span><div class="sec-tfs" data-sec="pd"><button class="stf" data-tf="1m">1м</button><button class="stf" data-tf="5m">5м</button><button class="stf" data-tf="15m">15м</button><button class="stf on" data-tf="1h">1ч</button><button class="stf" data-tf="4h">4ч</button><button class="stf" data-tf="1d">1д</button></div></div>
       <div class="strip" id="strip-pd"><div class="strip-empty">Загрузка…</div></div>
     </div>
     <div class="sect">
-      <div class="sect-hdr"><span class="dot" style="background:#ef4444;animation:pulse 1.5s infinite"></span>КРУПНЫЕ ЛИКВИДАЦИИ<span class="sect-cnt" id="cnt-liq"></span><span class="sect-thr" id="liq-src">— Binance forced orders / wick detection</span><div class="sec-tfs" data-sec="liq"><button class="stf" data-tf="1m">1м</button><button class="stf" data-tf="5m">5м</button><button class="stf" data-tf="15m">15м</button><button class="stf on" data-tf="1h">1ч</button><button class="stf" data-tf="4h">4ч</button><button class="stf" data-tf="1d">1д</button></div></div>
+      <div class="sect-hdr"><span class="dot" style="background:#ef4444;animation:pulse 1.5s infinite"></span>КРУПНЫЕ ЛИКВИДАЦИИ <span style="color:#5c7099;font-size:9px;font-weight:400">(ликвидирован крупный объём — часто сигнал разворота)</span><span class="sect-cnt" id="cnt-liq"></span><span class="sect-thr" id="liq-src">— Binance forced orders / wick detection</span><div class="sec-tfs" data-sec="liq"><button class="stf" data-tf="1m">1м</button><button class="stf" data-tf="5m">5м</button><button class="stf" data-tf="15m">15м</button><button class="stf on" data-tf="1h">1ч</button><button class="stf" data-tf="4h">4ч</button><button class="stf" data-tf="1d">1д</button></div></div>
       <div class="strip" id="strip-liq"><div class="strip-empty">Загрузка…</div></div>
     </div>
     <div class="sect">
-      <div class="sect-hdr"><span class="dot" style="background:#c084fc"></span>ОТКРЫТЫЙ ИНТЕРЕС<span class="sect-cnt" id="cnt-oi"></span><span class="sect-thr" id="oi-src">— MEXC Contract OI (накапливается через localStorage)</span><div class="sec-tfs" data-sec="oi"><button class="stf" data-tf="1m">1м</button><button class="stf" data-tf="5m">5м</button><button class="stf" data-tf="15m">15м</button><button class="stf on" data-tf="1h">1ч</button><button class="stf" data-tf="4h">4ч</button><button class="stf" data-tf="1d">1д</button></div></div>
+      <div class="sect-hdr"><span class="dot" style="background:#c084fc"></span>ОТКРЫТЫЙ ИНТЕРЕС <span style="color:#5c7099;font-size:9px;font-weight:400">(крупный объём входит или выходит из монеты)</span><span class="sect-cnt" id="cnt-oi"></span><span class="sect-thr" id="oi-src">— MEXC Contract OI (накапливается через localStorage)</span><div class="sec-tfs" data-sec="oi"><button class="stf" data-tf="1m">1м</button><button class="stf" data-tf="5m">5м</button><button class="stf" data-tf="15m">15м</button><button class="stf on" data-tf="1h">1ч</button><button class="stf" data-tf="4h">4ч</button><button class="stf" data-tf="1d">1д</button></div></div>
       <div class="strip" id="strip-oi"><div class="strip-empty" id="oi-empty-msg">Загрузка…</div></div>
     </div>
     <div class="sect">
-      <div class="sect-hdr"><span class="dot" style="background:#fb923c"></span>RSI СИТУАЦИИ<span class="sect-cnt" id="cnt-rsi"></span><span class="sect-thr">— RSI >72 / <28 или сдвиг ≥15пт</span><div class="sec-tfs" data-sec="rsi"><button class="stf" data-tf="1m">1м</button><button class="stf" data-tf="5m">5м</button><button class="stf" data-tf="15m">15м</button><button class="stf on" data-tf="1h">1ч</button><button class="stf" data-tf="4h">4ч</button><button class="stf" data-tf="1d">1д</button></div></div>
+      <div class="sect-hdr"><span class="dot" style="background:#fb923c"></span>RSI СИТУАЦИИ <span style="color:#5c7099;font-size:9px;font-weight:400">(перекупленность: &gt;70 перекуплен · &lt;30 перепродан)</span><span class="sect-cnt" id="cnt-rsi"></span><span class="sect-thr">— RSI >72 / <28 или сдвиг ≥15пт</span><div class="sec-tfs" data-sec="rsi"><button class="stf" data-tf="1m">1м</button><button class="stf" data-tf="5m">5м</button><button class="stf" data-tf="15m">15м</button><button class="stf on" data-tf="1h">1ч</button><button class="stf" data-tf="4h">4ч</button><button class="stf" data-tf="1d">1д</button></div></div>
       <div class="strip" id="strip-rsi"><div class="strip-empty">Загрузка RSI…</div></div>
     </div>
 
@@ -448,7 +448,7 @@ function updateMiniPrice(sym,price){
   for(const ro of Object.values(refs)){const r=ro[sym];if(r?.series)try{r.series.update(bar)}catch{}}
   if(sym===selSymbol&&bigCandle){
     try{bigCandle.update(bar)}catch{}
-    try{bigChart.timeScale().scrollToRealtime()}catch{}
+
   }
 }
 function initPriceWS(syms){
@@ -929,8 +929,8 @@ async function loadBig(sym,tf,isSynth){
     bigCandle.setData(bars);
     const closes=bars.map(b=>b.close),times=bars.map(b=>b.time);
     rsiLine.setData(calcRsiArr(closes).map((v,i)=>v!=null?{time:times[i],value:+v.toFixed(2)}:null).filter(Boolean));
-    try{bigChart.timeScale().scrollToRealtime()}catch{try{bigChart.timeScale().fitContent()}catch{}} // показать последнюю свечу справа
-    try{rsiChart.timeScale().scrollToRealtime()}catch{try{rsiChart.timeScale().fitContent()}catch{}}
+    try{bigChart.timeScale().fitContent()}catch{} // показать последнюю свечу справа
+    try{rsiChart.timeScale().fitContent()}catch{}
   }catch(e){
     console.error('loadBig:',e.message);
     document.getElementById('no-sel').textContent='Ошибка: '+e.message.slice(0,80);
@@ -966,7 +966,7 @@ function connectSelWS(sym,tf){
           if(lastRsi!=null)try{rsiLine.update({time:bar.time,value:+lastRsi.toFixed(2)})}catch{}
         }
         // Авто-прокрутка к последней свече (если пользователь у правого края)
-        try{try{bigChart.timeScale().scrollToRealtime()}catch{try{bigChart.timeScale().fitContent()}catch{}}}catch{}
+        try{try{bigChart.timeScale().fitContent()}catch{}}catch{}
       }
     }catch{}
   };
@@ -1136,6 +1136,12 @@ document.getElementById('tfs').addEventListener('click',e=>{
     initPriceWS(coins.map(c=>c.symbol));
     setInterval(loadChg5,60000);
     setInterval(loadKlines,60000);
+    // Обновляем текущую частичную свечу на главном графике каждые 30 сек
+    setInterval(()=>{
+      if(!selSymbol||!bigCandle)return;
+      const coin=coins.find(co=>co.symbol===selSymbol);
+      if(coin)updateMiniPrice(selSymbol,parseFloat(coin.lastPrice));
+    },30000);
     setInterval(fetchOI,60000);
     setInterval(fetchLiquidations,90000);
     setInterval(fetchSynthetics,120000);
