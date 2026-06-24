@@ -176,7 +176,9 @@ body{background:#080b14;color:#c8d6e8;font-family:'JetBrains Mono','Fira Code',m
 'use strict';
 const MEXC    = 'https://api.mexc.com/api/v3';
 const MEXCC   = 'https://contract.mexc.com/api/v1/contract';
-const PROXY   = 'https://corsproxy.io/?';
+// На продакшене используем серверный прокси сразу (без ожидания прямого запроса)
+const IS_LOCAL=location.hostname==='localhost'||location.hostname==='127.0.0.1';
+const PROXY=IS_LOCAL?'https://corsproxy.io/?':'/api-proxy?url=';
 const WS_URL  = 'wss://wbs.mexc.com/ws';
 const TF_WS   = {'1m':'Min1','5m':'Min5','15m':'Min15','30m':'Min30','1h':'Min60','4h':'Hour4','1d':'Day1'};
 const MEXC_TF = {'1m':'1m','15m':'15m','1h':'60m','4h':'4h','1d':'1d'};
@@ -198,7 +200,7 @@ let bigChart=null,bigCandle=null,rsiChart=null,rsiLine=null,bigInited=false;
 let priceWS=null, selWS=null, selWSTimer=null;
 let refs={grid:{},stocks:{},pd:{},liq:{},oi:{},rsi:{}};
 let keys={grid:null,stocks:null,pd:null,liq:null,oi:null,rsi:null};
-let useProxy=false;
+let useProxy=!IS_LOCAL; // на сайте сразу через прокси
 const sectionTf={pd:'1h',liq:'1h',oi:'1h',rsi:'1h',grid:'1h',stocks:'1h'};
 const tfCache={}; // tfCache[sym][tf]=bars
 const TF_INTERVAL={'1m':'1m','5m':'5m','15m':'15m','1h':'60m','4h':'4h','1d':'1d'};
