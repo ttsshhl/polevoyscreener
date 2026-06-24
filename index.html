@@ -418,11 +418,7 @@ function renderAll(){
 
   // 5. CRYPTO GRID
   const gridC=coins.filter(c=>(filter==='ALL'||getSigs(c).includes(filter)))
-    .sort((a,b)=>{
-      const sa=getSigs(a).length,sb=getSigs(b).length;
-      if(sb!==sa)return sb-sa; // сигналы первыми
-      return parseFloat(b.quoteVolume)-parseFloat(a.quoteVolume); // затем по объёму: BTC,ETH,SOL...
-    });
+    .sort((a,b)=>parseFloat(b.quoteVolume)-parseFloat(a.quoteVolume)); // BTC,ETH,SOL... всегда первые
   document.getElementById('cnt-grid').textContent=`(${gridC.length})`;
   const gk=gridC.map(c=>c.symbol).join(',');
   const gridEl=document.getElementById('grid');
@@ -870,7 +866,7 @@ function initBig(){
     });
     rsiLine=rsiChart.addLineSeries({color:'#a3e635',lineWidth:1,priceLineVisible:false,lastValueVisible:true});
     // RSI watermark label on left side
-    try{rsiChart.applyOptions({watermark:{visible:true,fontSize:10,horzAlign:'left',vertAlign:'top',color:'rgba(100,150,200,0.6)',text:'RSI (14)'}})}catch{}
+    try{rsiChart.applyOptions({watermark:{visible:true,fontSize:11,horzAlign:'left',vertAlign:'top',color:'rgba(220,235,255,0.9)',text:'RSI (14)'}})}catch{}
     // Simple price lines without axisLabelVisible (not supported in v4.1.1)
     rsiLine.createPriceLine({price:70,color:'#fb923c',lineWidth:1,lineStyle:2});
     rsiLine.createPriceLine({price:30,color:'#38bdf8',lineWidth:1,lineStyle:2});
