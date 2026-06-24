@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNiIgZmlsbD0iIzA4MGIxNCIvPgogIDwhLS0gQ2FuZGxlc3RpY2sgZ3JlZW4gLS0+CiAgPGxpbmUgeDE9IjEwIiB5MT0iNSIgeDI9IjEwIiB5Mj0iMTAiIHN0cm9rZT0iIzRhZGU4MCIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxyZWN0IHg9IjYiIHk9IjEwIiB3aWR0aD0iOCIgaGVpZ2h0PSIxMyIgcng9IjEuNSIgZmlsbD0iIzRhZGU4MCIvPgogIDxsaW5lIHgxPSIxMCIgeTE9IjIzIiB4Mj0iMTAiIHkyPSIyOCIgc3Ryb2tlPSIjNGFkZTgwIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPCEtLSBDYW5kbGVzdGljayByZWQgLS0+CiAgPGxpbmUgeDE9IjIyIiB5MT0iNCIgeDI9IjIyIiB5Mj0iOSIgc3Ryb2tlPSIjZjg3MTcxIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPHJlY3QgeD0iMTgiIHk9IjkiIHdpZHRoPSI4IiBoZWlnaHQ9IjE1IiByeD0iMS41IiBmaWxsPSIjZjg3MTcxIi8+CiAgPGxpbmUgeDE9IjIyIiB5MT0iMjQiIHgyPSIyMiIgeTI9IjI4IiBzdHJva2U9IiNmODcxNzEiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+">
+  <link rel="shortcut icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNiIgZmlsbD0iIzA4MGIxNCIvPgogIDwhLS0gQ2FuZGxlc3RpY2sgZ3JlZW4gLS0+CiAgPGxpbmUgeDE9IjEwIiB5MT0iNSIgeDI9IjEwIiB5Mj0iMTAiIHN0cm9rZT0iIzRhZGU4MCIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxyZWN0IHg9IjYiIHk9IjEwIiB3aWR0aD0iOCIgaGVpZ2h0PSIxMyIgcng9IjEuNSIgZmlsbD0iIzRhZGU4MCIvPgogIDxsaW5lIHgxPSIxMCIgeTE9IjIzIiB4Mj0iMTAiIHkyPSIyOCIgc3Ryb2tlPSIjNGFkZTgwIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPCEtLSBDYW5kbGVzdGljayByZWQgLS0+CiAgPGxpbmUgeDE9IjIyIiB5MT0iNCIgeDI9IjIyIiB5Mj0iOSIgc3Ryb2tlPSIjZjg3MTcxIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPHJlY3QgeD0iMTgiIHk9IjkiIHdpZHRoPSI4IiBoZWlnaHQ9IjE1IiByeD0iMS41IiBmaWxsPSIjZjg3MTcxIi8+CiAgPGxpbmUgeDE9IjIyIiB5MT0iMjQiIHgyPSIyMiIgeTI9IjI4IiBzdHJva2U9IiNmODcxNzEiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>POLEVOY SCREENER</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#080b14;color:#c8d6e8;font-family:'JetBrains Mono','Fira Code',monospace;height:100vh;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100vh}
+#hdr{background:#0c0f1a;border-bottom:1px solid #131a2e;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:8px;flex-wrap:wrap}
+#flt{padding:5px 16px;background:#0a0d18;border-bottom:1px solid #0e1525;display:flex;gap:4px;flex-wrap:wrap;flex-shrink:0;align-items:center}
+.fb,.tab-btn{background:transparent;border:1px solid #1e2740;color:#7c93b8;padding:3px 8px;font-size:10px;font-family:inherit;border-radius:3px;cursor:pointer;transition:all .12s}
+.fb:hover,.tab-btn:hover{border-color:#2a3d60;color:#c8d6e8}
+.fb.on{background:rgba(163,230,53,.08);border-color:#a3e635;color:#a3e635}
+.tab-btn.on{background:rgba(251,191,36,.1);border-color:#fbbf24;color:#fbbf24}
+.sep{width:1px;height:14px;background:#1e2740;margin:0 4px;flex-shrink:0}
+#scroll{flex:1;overflow-y:scroll;overflow-x:hidden;min-height:0}
+#scroll::-webkit-scrollbar{width:8px}
+#scroll::-webkit-scrollbar-track{background:#0c0f1a}
+#scroll::-webkit-scrollbar-thumb{background:#253550;border-radius:4px;cursor:pointer}
+#scroll::-webkit-scrollbar-thumb:hover{background:#3d5080}
+/* BIG CHART */
+#bigwrap{background:#0a0d18;border-bottom:1px solid #131a2e}
+#chdr{padding:8px 16px;display:flex;align-items:center;gap:10px;min-height:38px;flex-wrap:wrap}
+#no-sel{color:#5c7099;font-size:12px}
+#cinfo{display:none;align-items:baseline;gap:8px;flex-wrap:wrap}
+#cname{font-size:14px;font-weight:700;color:#dde8ff}
+#cprice,#cchg,#cvol,#coi{font-size:11px}
+#tfs{display:flex;gap:4px;margin-left:auto}
+.tf{background:transparent;border:1px solid #1e2740;color:#7c93b8;padding:3px 8px;font-size:10px;font-family:inherit;border-radius:3px;cursor:pointer}
+.tf:hover{color:#c8d6e8;border-color:#4a6080}.tf.on{background:rgba(163,230,53,.15);border-color:#a3e635;color:#a3e635;font-weight:700}
+#bigcharts{display:none;flex-direction:column;height:380px}
+#mc{flex:2;min-height:0;height:270px}#rcdiv{flex:1;min-height:0;height:110px;position:relative;border-top:1px solid #0e1525}#rc{width:100%;height:100%}
+
+/* SECTIONS */
+.sect{padding:8px 16px 2px}
+.sect-hdr{font-size:10px;letter-spacing:1.5px;color:#eef3fb;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.sect-hdr .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.sect-cnt{color:#7c93b8;font-weight:400;letter-spacing:0}
+.sect-thr{font-size:9px;color:#2a3d60;font-weight:400;letter-spacing:0}
+/* STRIP */
+.strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;cursor:grab;user-select:none;min-height:100px;align-items:flex-start}
+.strip:active{cursor:grabbing}
+.strip::-webkit-scrollbar{height:7px}
+.strip::-webkit-scrollbar-track{background:#0c0f1a;border-radius:4px}
+.strip::-webkit-scrollbar-thumb{background:#253550;border-radius:4px}
+.strip::-webkit-scrollbar-thumb:hover{background:#3d5080}
+.strip-empty{color:#7c93b8;font-size:11px;padding:14px 0;white-space:nowrap;align-self:center}
+/* CARD */
+.card{background:#0a0d18;border:1px solid #131a2e;border-radius:5px;cursor:pointer;overflow:hidden;flex-shrink:0;width:200px;transition:border-color .12s}
+.card:hover{border-color:#2a3d60}.card.sel{border-color:#a3e635;box-shadow:0 0 0 1px #a3e635 inset}
+.card.synth-card{border-color:#1a1f35}
+.card-top{display:flex;justify-content:space-between;align-items:center;padding:5px 7px 1px}
+.card-sym{font-size:10px;font-weight:700;color:#dde8ff}
+.card-chg{font-size:10px;font-weight:700}
+.card-mini{height:58px;width:100%;display:block}
+.card-bot{display:flex;justify-content:space-between;align-items:center;padding:2px 7px 5px;gap:4px}
+.card-metric{font-size:9px;font-weight:700}
+.card-badges{display:flex;gap:2px;flex-wrap:wrap;justify-content:flex-end}
+.bd{font-size:7px;padding:1px 4px;border-radius:2px;font-weight:700;white-space:nowrap}
+/* GRID */
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:7px;padding-bottom:16px}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:#080b14}
+::-webkit-scrollbar-thumb{background:#1e2740;border-radius:2px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="hdr">
+    <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+      <span id="dot" style="width:8px;height:8px;border-radius:50%;background:#f59e0b;display:inline-block;animation:pulse 1.6s infinite"></span>
+      <span style="font-size:14px;font-weight:700;color:#a3e635;letter-spacing:3px">POLEVOY SCREENER</span>
+      <span style="font-size:9px;color:#2a3d60;letter-spacing:2px">MEXC · USDT</span>
+      <a href="https://bingxdao.com/invite/SUKYJI/" target="_blank" rel="noopener"
+        style="background:linear-gradient(135deg,#f59e0b,#f97316);color:#000;font-size:10px;font-weight:700;padding:4px 12px;border-radius:4px;text-decoration:none;letter-spacing:0.5px;white-space:nowrap;flex-shrink:0">
+        📈 ТОРГОВАТЬ
+      </a>
+    </div>
+    <div style="display:flex;gap:12px;font-size:10px;color:#4a6080;align-items:center;flex-wrap:wrap">
+      <span>Пар: <b id="pcnt" style="color:#c8d6e8">0</b></span>
+      <span id="upd" style="color:#2a3d60">загрузка…</span>
+      <span id="st-charts" style="color:#f59e0b"></span>
+      <span id="st-oi" style="color:#2a3d60"></span>
+      <span id="st-liq" style="color:#2a3d60"></span>
+      
+      <span style="display:flex;align-items:center;gap:3px;font-size:9px;color:#2a3d60">
+        <span id="wsdot" style="width:6px;height:6px;border-radius:50%;background:#2a3d60;display:inline-block"></span>RT
+      </span>
+    </div>
+  </div>
+
+  <div id="flt">
+    <button class="tab-btn on" data-tab="crypto">Крипто</button>
+    <button class="tab-btn" data-tab="stocks">📈 Фонда</button>
+    <div class="sep"></div>
+    <span style="font-size:9px;color:#5c7099">Фильтр:</span>
+    <button class="fb on" data-f="ALL">Все</button>
+    <button class="fb" data-f="PUMP5">Памп 5м</button>
+    <button class="fb" data-f="DUMP5">Дамп 5м</button>
+    <button class="fb" data-f="OI_UP">ОИ↑</button>
+    <button class="fb" data-f="OI_DOWN">ОИ↓</button>
+    <button class="fb" data-f="RSI_OB">RSI OB</button>
+    <button class="fb" data-f="RSI_OS">RSI OS</button>
+
+    <button class="fb" data-f="LONG_LIQ">🔴Лонг лик</button>
+    <button class="fb" data-f="SHORT_LIQ">🔵Шорт лик</button>
+  </div>
+
+  <div id="scroll">
+    <!-- BIG CHART -->
+    <div id="bigwrap">
+      <div id="chdr">
+        <div id="no-sel">← Выберите монету ниже</div>
+        <div id="cinfo">
+          <span id="cname"></span><span id="cprice"></span>
+          <span id="cchg"></span><span id="cvol"></span><span id="coi"></span>
+        </div>
+        <div id="tfs">
+          <button class="tf" data-tf="1m">1м</button>
+          <button class="tf" data-tf="15m">15м</button>
+          <button class="tf on" data-tf="1h">1ч</button>
+          <button class="tf" data-tf="4h">4ч</button>
+          <button class="tf" data-tf="1d">1д</button>
+        </div>
+      </div>
+      <div id="bigcharts"><div id="mc"></div><div id="rcdiv"><div id="rc"></div></div></div>
+    </div>
+
+    <!-- SITUATIONS (always visible, crypto + stocks mixed) -->
+    <div class="sect">
+      <div class="sect-hdr"><span class="dot" style="background:#f59e0b;animation:pulse 2s infinite"></span>ПАМП / ДАМП<span class="sect-cnt" id="cnt-pd"></span><span class="sect-thr">— движение за ~10м ≥3%</span></div>
+      <div class="strip" id="strip-pd"><div class="strip-empty">Загрузка…</div></div>
+    </div>
+    <div class="sect">
+      <div class="sect-hdr"><span class="dot" style="background:#ef4444;animation:pulse 1.5s infinite"></span>КРУПНЫЕ ЛИКВИДАЦИИ<span class="sect-cnt" id="cnt-liq"></span><span class="sect-thr" id="liq-src">— Binance forced orders / wick detection</span></div>
+      <div class="strip" id="strip-liq"><div class="strip-empty">Загрузка…</div></div>
+    </div>
+    <div class="sect">
+      <div class="sect-hdr"><span class="dot" style="background:#c084fc"></span>ОТКРЫТЫЙ ИНТЕРЕС<span class="sect-cnt" id="cnt-oi"></span><span class="sect-thr" id="oi-src">— MEXC Contract OI (накапливается через localStorage)</span></div>
+      <div class="strip" id="strip-oi"><div class="strip-empty" id="oi-empty-msg">Загрузка…</div></div>
+    </div>
+    <div class="sect">
+      <div class="sect-hdr"><span class="dot" style="background:#fb923c"></span>RSI СИТУАЦИИ<span class="sect-cnt" id="cnt-rsi"></span><span class="sect-thr">— RSI >72 / <28 или сдвиг ≥15пт</span></div>
+      <div class="strip" id="strip-rsi"><div class="strip-empty">Загрузка RSI…</div></div>
+    </div>
+
+    <!-- CRYPTO TAB -->
+    <div id="panel-crypto">
+      <div class="sect" style="padding-top:10px">
+        <div class="sect-hdr"><span class="dot" style="background:#5c7099"></span>ВСЕ МОНЕТЫ<span class="sect-cnt" id="cnt-grid"></span><span class="sect-thr" id="grid-tf-label">— графики 1ч · мини-чарты обновляются в реальном времени</span></div>
+        <div id="grid"></div>
+      </div>
+    </div>
+
+    <!-- STOCKS TAB -->
+    <div id="panel-stocks" style="display:none">
+      <div class="sect" style="padding-top:10px">
+        <div class="sect-hdr"><span class="dot" style="background:#fbbf24"></span>ФОНДОВЫЕ И ТОВАРНЫЕ АКТИВЫ<span class="sect-cnt" id="cnt-stocks"></span><span class="sect-thr">— MEXC Futures (Gold, Silver, NASDAQ, акции)</span></div>
+        <div id="grid-stocks"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
+<script>
+'use strict';
+const MEXC    = 'https://api.mexc.com/api/v3';
+const MEXCC   = 'https://contract.mexc.com/api/v1/contract';
+// Авто-выбор прокси: если открыт на сервере — используем собственный /api-proxy
+// Это решает проблему блокировок без VPN у пользователя
+const IS_LOCAL = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+const PROXY = IS_LOCAL
+  ? 'https://corsproxy.io/?'
+  : '/api-proxy?url=';  // серверный прокси — запросы идут с сервера, не из браузера
+const WS_URL  = 'wss://wbs.mexc.com/ws';
+const TF_WS   = {'1m':'Min1','5m':'Min5','15m':'Min15','30m':'Min30','1h':'Min60','4h':'Hour4','1d':'Day1'};
+const MEXC_TF = {'1m':'1m','15m':'15m','1h':'60m','4h':'4h','1d':'1d'};
+const SYNTH_KEYS=['GOLD','SILVER','XAU','XAG','NQ100','SP500','NASDAQ','DJI',
+  'TSLA','AAPL','AMZN','MSFT','NVDA','GOOGL','META','NFLX','AMD','COIN','MSTR','BABA'];
+const OI_LS_KEY='polevoy_oi_v2';
+const THR_PD=3, THR_OI=5, THR_RSI_EX=72, THR_RSI_MV=15;
+const CARD_W=200, CARD_H=58;
+const MSK = 3 * 3600; // Moscow = UTC+3 (no DST since 2014)
+function toMsk(s){ return s + MSK; }
+function mskHourBoundary(){ return Math.floor((Math.floor(Date.now()/1000)+MSK)/3600)*3600; }
+
+// All coins (crypto + synth merged for signals)
+let coins=[], synthCoins=[];
+let rsiMap={}, candleMap={}, oiMap={}, chg5Map={}, rsiPrev={}, liqMap={};
+let filter='ALL', activeTab='crypto';
+let selSymbol=null, selIsSynth=false, currentTf='1h';
+let bigChart=null,bigCandle=null,rsiChart=null,rsiLine=null,bigInited=false;
+let priceWS=null, selWS=null, selWSTimer=null;
+let refs={grid:{},stocks:{},pd:{},liq:{},oi:{},rsi:{}};
+let keys={grid:null,stocks:null,pd:null,liq:null,oi:null,rsi:null};
+let useProxy=false;
+let _oiEmptyMsg='Загрузка OI…';
+
+// ── LAZY CHART OBSERVER ──────────────────────────────────
+// IntersectionObserver with #scroll as root (it's the scrollable container, not window)
+const chartObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting)return;
+    const div=e.target, sym=div.dataset.sym;
+    for(const ro of Object.values(refs)){
+      const r=ro[sym];
+      if(r&&!r.chartInited){
+        r.chartInited=true;
+        const miniEl=div.querySelector('.card-mini');
+        if(!miniEl)return;
+        const{chart,series}=makeMini(miniEl);
+        r.chart=chart;r.series=series;
+        const bars=candleMap[sym];
+        if(bars?.length)try{series.setData(bars);chart.timeScale().fitContent()}catch{}
+        chartObs.unobserve(div);return;
+      }
+    }
+  });
+},{root:document.getElementById('scroll'),rootMargin:'200px',threshold:0.01});
+
+// ── FETCH ────────────────────────────────────────────────
+async function apiFetch(url){
+  const target=useProxy?PROXY+encodeURIComponent(url):url;
+  const r=await tFetch(target,10000);
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  return r.json();
+}
+async function fetchAuto(url){
+  try{return await apiFetch(url)}
+  catch(e){
+    if(!useProxy){
+      console.warn('Direct fetch failed, switching to proxy:', e.message);
+      useProxy=true;
+      return apiFetch(url);
+    }
+    throw e;
+  }
+}
+function tFetch(url,ms=5000){
+  return Promise.race([fetch(url),new Promise((_,rej)=>setTimeout(()=>rej(new Error('to')),ms))]);
+}
+async function tFetchJ(url,ms=5000){
+  let j=null;
+  try{const r=await tFetch(url,ms);if(r.ok)j=await r.json()}catch{}
+  if(!j)try{const r=await tFetch(PROXY+encodeURIComponent(url),ms+2000);if(r.ok)j=await r.json()}catch{}
+  return j;
+}
+
+// ── RSI ─────────────────────────────────────────────────
+function calcRsiArr(closes,p=14){
+  if(closes.length<p+1)return new Array(closes.length).fill(null);
+  const out=new Array(p).fill(null);
+  let g=0,l=0;
+  for(let i=1;i<=p;i++){const d=closes[i]-closes[i-1];d>=0?g+=d:l-=d}
+  let ag=g/p,al=l/p;
+  out.push(al===0?100:100-100/(1+ag/al));
+  for(let i=p+1;i<closes.length;i++){
+    const d=closes[i]-closes[i-1];
+    ag=(ag*13+Math.max(d,0))/14;al=(al*13+Math.max(-d,0))/14;
+    out.push(al===0?100:100-100/(1+ag/al));
+  }
+  return out;
+}
+function calcRsiLast(cls){const a=calcRsiArr(cls);const v=a[a.length-1];return v!=null?+v.toFixed(1):null}
+
+// ── SIGNALS ─────────────────────────────────────────────
+const SIG={
+  PUMP5:    {bg:'#0f2a1a',bd:'#1a5c35',tx:'#4ade80',lb:'🚀ПАМП'},
+  DUMP5:    {bg:'#2a0f0f',bd:'#5c1a1a',tx:'#f87171',lb:'📉ДАМП'},
+  OI_UP:    {bg:'#1a0f2a',bd:'#3a1a5c',tx:'#c084fc',lb:'ОИ↑'},
+  OI_DOWN:  {bg:'#2a0f24',bd:'#5c1a4d',tx:'#f472b6',lb:'ОИ↓'},
+  RSI_OB:   {bg:'#2a1a00',bd:'#5c3a00',tx:'#fb923c',lb:'RSI⬆'},
+  RSI_OS:   {bg:'#0a1a2a',bd:'#0e3a5c',tx:'#38bdf8',lb:'RSI⬇'},
+  RSI_UP:   {bg:'#1a1200',bd:'#3d2c00',tx:'#fbbf24',lb:'RSI↑'},
+  RSI_DOWN: {bg:'#0a1a24',bd:'#0e2a3c',tx:'#7dd3fc',lb:'RSI↓'},
+  LONG_LIQ: {bg:'#2a0808',bd:'#6b1818',tx:'#ff8080',lb:'🔴ЛОНГ ЛИК'},
+  SHORT_LIQ:{bg:'#08102a',bd:'#183066',tx:'#80c0ff',lb:'🔵ШОРТ ЛИК'},
+};
+function getSigs(c){
+  const sym=c.symbol,s=[];
+  const v=chg5Map[sym];if(v!=null){if(v>=THR_PD)s.push('PUMP5');if(v<=-THR_PD)s.push('DUMP5')}
+  const oi=oiMap[sym];if(oi!=null){if(oi>=THR_OI)s.push('OI_UP');if(oi<=-THR_OI)s.push('OI_DOWN')}
+  const rsi=rsiMap[sym];
+  if(rsi!=null){if(rsi>=THR_RSI_EX)s.push('RSI_OB');if(rsi<=(100-THR_RSI_EX))s.push('RSI_OS')}
+  const prev=rsiPrev[sym];if(prev!=null&&rsi!=null){const rd=+(rsi-prev).toFixed(1);if(rd>=THR_RSI_MV)s.push('RSI_UP');if(rd<=-THR_RSI_MV)s.push('RSI_DOWN')}
+  const liq=liqMap[sym];if(liq)s.push(liq.type);
+  return s;
+}
+function bdHtml(sigs){return sigs.map(s=>SIG[s]?`<span class="bd" style="background:${SIG[s].bg};border:1px solid ${SIG[s].bd};color:${SIG[s].tx}">${SIG[s].lb}</span>`:'').join('')}
+
+// ── FORMAT ──────────────────────────────────────────────
+function fV(v){const n=parseFloat(v);return n>=1e9?(n/1e9).toFixed(2)+'B':n>=1e6?(n/1e6).toFixed(2)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':n.toFixed(0)}
+function fP(p){const n=parseFloat(p);return n>=1000?n.toLocaleString('en',{maximumFractionDigits:2}):n>=1?n.toFixed(4):n>=0.001?n.toFixed(6):n.toExponential(3)}
+function fPct(v,d=2){return v==null?'—':(v>0?'+':'')+v.toFixed(d)+'%'}
+
+// ── MINI CHART ───────────────────────────────────────────
+const MOPTS={layout:{background:{color:'transparent'},textColor:'transparent'},grid:{vertLines:{visible:false},horzLines:{visible:false}},rightPriceScale:{visible:false},leftPriceScale:{visible:false},timeScale:{visible:false},crosshair:{vertLine:{visible:false,labelVisible:false},horzLine:{visible:false,labelVisible:false}},handleScroll:false,handleScale:false};
+function makeMini(el){
+  const chart=LightweightCharts.createChart(el,{...MOPTS,width:CARD_W,height:CARD_H});
+  const series=chart.addCandlestickSeries({upColor:'#4ade80',downColor:'#f87171',borderVisible:false,wickUpColor:'#4ade80',wickDownColor:'#f87171'});
+  new ResizeObserver(e=>{const{width,height}=e[0].contentRect;if(width>0&&height>0)chart.applyOptions({width,height})}).observe(el);
+  return{chart,series};
+}
+
+// ── BUILD / UPDATE CARD ──────────────────────────────────
+function buildCard(c,container,refsObj,lazy=true,extraClass=''){
+  const div=document.createElement('div');
+  div.className='card'+(extraClass?' '+extraClass:'');
+  div.dataset.sym=c.symbol;
+  div.addEventListener('click',()=>selectCoin(c.symbol,c._isSynth));
+  div.innerHTML=`<div class="card-top"><span class="card-sym">${c._displayName||c.symbol.replace('USDT','')}<span style="color:#1e2740;font-weight:400">/${c._isSynth?'F':'U'}</span></span><span class="card-chg"></span></div><div class="card-mini"></div><div class="card-bot"><span class="card-metric"></span><span class="card-badges"></span></div>`;
+  container.appendChild(div);
+  const r={root:div,chgEl:div.querySelector('.card-chg'),metricEl:div.querySelector('.card-metric'),bdEl:div.querySelector('.card-badges'),chart:null,series:null,chartInited:false};
+  refsObj[c.symbol]=r;
+  if(lazy)chartObs.observe(div);
+  else{r.chartInited=true;const{chart,series}=makeMini(div.querySelector('.card-mini'));r.chart=chart;r.series=series}
+}
+function disposeRefs(ro){Object.values(ro).forEach(r=>{if(r.chart)try{r.chart.remove()}catch{}})}
+function updateCard(c,r,metricFn){
+  const ch=parseFloat(c.priceChangePercent);
+  // Show 24h % change clearly labeled
+  r.chgEl.textContent=fPct(ch)+' 24ч';
+  r.chgEl.style.color=ch>0?'#4ade80':ch<0?'#f87171':'#4a6080';
+  r.bdEl.innerHTML=bdHtml(getSigs(c));
+  r.root.classList.toggle('sel',c.symbol===selSymbol);
+  if(metricFn){const{text,color}=metricFn(c);r.metricEl.textContent=text;r.metricEl.style.color=color||'#5c7099'}
+  else{r.metricEl.textContent='$'+fV(c.quoteVolume);r.metricEl.style.color='#2a3d60'}
+  if(r.series&&candleMap[c.symbol]?.length)try{r.series.setData(candleMap[c.symbol]);r.chart.timeScale().fitContent()}catch{}
+}
+
+// ── STRIP SCROLL ─────────────────────────────────────────
+function initStrip(el){
+  el.addEventListener('wheel',e=>{if(Math.abs(e.deltaY)>Math.abs(e.deltaX)){e.preventDefault();el.scrollLeft+=e.deltaY}},{passive:false});
+  let dn=false,sx=0,sl=0;
+  el.addEventListener('mousedown',e=>{dn=true;sx=e.pageX;sl=el.scrollLeft;el.style.cursor='grabbing'});
+  window.addEventListener('mouseup',()=>{dn=false;el.style.cursor='grab'});
+  el.addEventListener('mousemove',e=>{if(!dn)return;e.preventDefault();el.scrollLeft=sl-(e.pageX-sx)});
+}
+function renderStrip(id,list,refKey,empty,sortFn,metricFn,lazy=false){
+  const sorted=[...list].sort(sortFn);
+  const k=sorted.map(c=>c.symbol).join(',');
+  const el=document.getElementById(id);
+  if(k!==keys[refKey]||keys[refKey]===null){
+    keys[refKey]=k;disposeRefs(refs[refKey]);refs[refKey]={};
+    el.innerHTML='';
+    if(!sorted.length)el.innerHTML=`<div class="strip-empty">${empty}</div>`;
+    else{
+      sorted.forEach(c=>buildCard(c,el,refs[refKey],lazy,c._isSynth?'synth-card':''));
+      if(!lazy)setTimeout(()=>sorted.forEach(co=>pushCandlesToRefs(co.symbol)),120);
+    }
+  }
+  // Always sync empty message even if key unchanged
+  if(!sorted.length){
+    const emp=el.querySelector('.strip-empty');
+    if(emp&&emp.textContent!==empty)emp.textContent=empty;
+  }
+  sorted.forEach(c=>{if(refs[refKey][c.symbol])updateCard(c,refs[refKey][c.symbol],metricFn)});
+}
+
+// ── RENDER ALL ───────────────────────────────────────────
+function renderAll(){
+  document.getElementById('pcnt').textContent=coins.length;
+  const allCoins=[...coins,...synthCoins]; // situations show both
+
+  // 1. PUMP/DUMP
+  const pdC=allCoins.filter(c=>getSigs(c).some(s=>s==='PUMP5'||s==='DUMP5'));
+  document.getElementById('cnt-pd').textContent=pdC.length?`(${pdC.length})`:'';
+  renderStrip('strip-pd',pdC,'pd','Нет резких движений ≥3%',
+    (a,b)=>Math.abs(chg5Map[b.symbol]||0)-Math.abs(chg5Map[a.symbol]||0),
+    c=>{const v=chg5Map[c.symbol];return{text:v!=null?fPct(v)+' 10м':'—',color:v>0?'#4ade80':v<0?'#f87171':'#5c7099'}});
+
+  // 2. LIQUIDATIONS
+  const liqC=allCoins.filter(c=>liqMap[c.symbol]);
+  document.getElementById('cnt-liq').textContent=liqC.length?`(${liqC.length})`:'';
+  renderStrip('strip-liq',liqC,'liq','Нет данных о ликвидациях',
+    (a,b)=>(liqMap[b.symbol]?.total||0)-(liqMap[a.symbol]?.total||0),
+    c=>{const l=liqMap[c.symbol];if(!l)return{text:'—',color:'#5c7099'};
+      return{text:l.valueUSD?'$'+fV(l.valueUSD):(l.type==='LONG_LIQ'?'Лонги':'Шорты'),color:l.type==='LONG_LIQ'?'#ff8080':'#80c0ff'}});
+
+  // 3. OI
+  const oiC=allCoins.filter(c=>getSigs(c).some(s=>s==='OI_UP'||s==='OI_DOWN'));
+  document.getElementById('cnt-oi').textContent=oiC.length?`(${oiC.length})`:'';
+  renderStrip('strip-oi',oiC,'oi',_oiEmptyMsg||`Нет монет с изм. ОИ ≥${THR_OI}%`,
+    (a,b)=>Math.abs(oiMap[b.symbol]||0)-Math.abs(oiMap[a.symbol]||0),
+    c=>{
+      const v=oiMap[c.symbol];
+      const v15=oiMap[c.symbol+'__15m'];
+      // Show 15m if available (Bybit), else main value
+      let txt='—',col='#5c7099';
+      if(v15!=null){
+        txt=`15м:${fPct(v15,1)} | ${fPct(v,1)}`;
+        col=v>0?'#c084fc':'#f472b6';
+      }else if(v!=null){
+        txt=fPct(v,1)+' OI';col=v>0?'#c084fc':'#f472b6';
+      }
+      return{text:txt,color:col};
+    });
+
+  // 4. RSI
+  const rsiC=allCoins.filter(c=>getSigs(c).some(s=>s.startsWith('RSI')));
+  document.getElementById('cnt-rsi').textContent=rsiC.length?`(${rsiC.length})`:'';
+  renderStrip('strip-rsi',rsiC,'rsi','Загружаем RSI…',
+    (a,b)=>Math.abs((rsiMap[b.symbol]||50)-50)-Math.abs((rsiMap[a.symbol]||50)-50),
+    c=>{const rsi=rsiMap[c.symbol];const prev=rsiPrev[c.symbol];const d=prev!=null&&rsi!=null?+(rsi-prev).toFixed(0):0;
+      return{text:'RSI '+(rsi??'?')+(d?` (${d>0?'+':''}${d})`:''),color:rsi>=THR_RSI_EX?'#fb923c':rsi<=(100-THR_RSI_EX)?'#38bdf8':'#fbbf24'}});
+
+  // 5. CRYPTO GRID
+  const gridC=coins.filter(c=>(filter==='ALL'||getSigs(c).includes(filter)))
+    .sort((a,b)=>{const sa=getSigs(a).length,sb=getSigs(b).length;if(sb!==sa)return sb-sa;return Math.abs(parseFloat(b.priceChangePercent))-Math.abs(parseFloat(a.priceChangePercent))});
+  document.getElementById('cnt-grid').textContent=`(${gridC.length})`;
+  const gk=gridC.map(c=>c.symbol).join(',');
+  const gridEl=document.getElementById('grid');
+  if(gk!==keys.grid){keys.grid=gk;disposeRefs(refs.grid);refs.grid={};gridEl.innerHTML='';gridC.forEach(c=>buildCard(c,gridEl,refs.grid,true))}
+  gridC.forEach(c=>{if(refs.grid[c.symbol])updateCard(c,refs.grid[c.symbol],null)});
+
+  // 6. STOCKS GRID
+  const stC=synthCoins.filter(c=>(filter==='ALL'||getSigs(c).includes(filter)))
+    .sort((a,b)=>{const sa=getSigs(a).length,sb=getSigs(b).length;if(sb!==sa)return sb-sa;return Math.abs(parseFloat(b.priceChangePercent))-Math.abs(parseFloat(a.priceChangePercent))});
+  document.getElementById('cnt-stocks').textContent=`(${stC.length})`;
+  const sk=stC.map(c=>c.symbol).join(',');
+  const stEl=document.getElementById('grid-stocks');
+  if(sk!==keys.stocks){keys.stocks=sk;disposeRefs(refs.stocks);refs.stocks={};stEl.innerHTML='';stEl.style.display='grid';stEl.style.gridTemplateColumns='repeat(auto-fill,minmax(200px,1fr))';stEl.style.gap='7px';stEl.style.paddingBottom='16px';stC.forEach(c=>buildCard(c,stEl,refs.stocks,true,'synth-card'))}
+  stC.forEach(c=>{if(refs.stocks[c.symbol])updateCard(c,refs.stocks[c.symbol],null)});
+}
+
+// ── REALTIME PRICE WS ────────────────────────────────────
+function updateMiniPrice(sym,price){
+  const bars=candleMap[sym];if(!bars?.length)return;
+  const last=bars[bars.length-1];
+  const hrTime=mskHourBoundary();
+  let bar;
+  if(last.time===hrTime)bar={...last,high:Math.max(last.high,price),low:Math.min(last.low,price),close:price};
+  else if(hrTime>last.time){bar={time:hrTime,open:price,high:price,low:price,close:price};bars.push(bar)}
+  else return;
+  if(last.time===hrTime)bars[bars.length-1]=bar;
+  for(const ro of Object.values(refs)){const r=ro[sym];if(r?.series)try{r.series.update(bar)}catch{}}
+  if(sym===selSymbol&&bigCandle){
+    try{bigCandle.update(bar)}catch{}
+    try{bigChart.timeScale().scrollToRealtime()}catch{}
+  }
+}
+function initPriceWS(syms){
+  if(priceWS){try{priceWS.close()}catch{} priceWS=null}
+  const dot=document.getElementById('wsdot');
+  dot.style.background='#f59e0b';
+  priceWS=new WebSocket(WS_URL);
+  priceWS.onopen=()=>{
+    dot.style.background='#4ade80';
+    for(let i=0;i<syms.length;i+=50)
+      priceWS.send(JSON.stringify({method:'SUBSCRIPTION',params:syms.slice(i,i+50).map(s=>`spot@public.miniTicker.v3.api@${s}`)}));
+    priceWS._p=setInterval(()=>{if(priceWS.readyState===1)priceWS.send(JSON.stringify({method:'PING'}))},20000);
+  };
+  priceWS.onmessage=evt=>{
+    try{
+      const msg=JSON.parse(evt.data);if(!msg.d)return;
+      const d=msg.d;
+      const sym=d.s||(msg.c?.split('@').pop());
+      const price=parseFloat(d.c||d.p||0);
+      if(!sym||!price)return;
+      const coin=coins.find(x=>x.symbol===sym);
+      if(coin){coin.lastPrice=String(price);updateMiniPrice(sym,price)}
+    }catch{}
+  };
+  priceWS.onerror=()=>{dot.style.background='#f87171'};
+  priceWS.onclose=()=>{clearInterval(priceWS._p);dot.style.background='#2a3d60';setTimeout(()=>initPriceWS(coins.map(c=>c.symbol)),5000)};
+}
+
+// ── TICKERS ──────────────────────────────────────────────
+async function fetchTickers(){
+  const data=await fetchAuto(`${MEXC}/ticker/24hr`);
+  const all=data.filter(t=>t.symbol.endsWith('USDT')&&!t.symbol.includes('_'));
+  coins=all.map(c=>{
+    const vol=parseFloat(c.quoteVolume)||0;
+    const chg=Math.abs(parseFloat(c.priceChangePercent)||0);
+    return{...c,rsi:rsiMap[c.symbol]??null,_score:(vol/1e6)+(chg>5?chg*50:chg>2?chg*10:0)};
+  }).sort((a,b)=>b._score-a._score).slice(0,250);
+  document.getElementById('dot').style.background='#a3e635';
+  document.getElementById('upd').textContent=new Date().toLocaleTimeString('ru');
+  renderAll();
+  if(selSymbol&&!selIsSynth){const c=coins.find(x=>x.symbol===selSymbol);if(c)updateHeader(c)}
+}
+
+// ── SYNTH (MEXC contract ticker + klines) ─────────────────
+async function fetchSynthetics(){
+  // BingX public market data API — stocks, commodities, indices
+  // No API key required for public endpoints
+  const BINGX='https://open-api.bingx.com';
+  const BINGX_SYMS=[
+    {s:'GOLD-USDT',   n:'GOLD'},
+    {s:'SILVER-USDT', n:'SILVER'},
+    {s:'AAPL-USDT',   n:'AAPL'},
+    {s:'TSLA-USDT',   n:'TSLA'},
+    {s:'NVDA-USDT',   n:'NVDA'},
+    {s:'AMZN-USDT',   n:'AMZN'},
+    {s:'MSFT-USDT',   n:'MSFT'},
+    {s:'GOOGL-USDT',  n:'GOOGL'},
+    {s:'META-USDT',   n:'META'},
+    {s:'NFLX-USDT',   n:'NFLX'},
+    {s:'AMD-USDT',    n:'AMD'},
+    {s:'COIN-USDT',   n:'COIN'},
+    {s:'MSTR-USDT',   n:'MSTR'},
+    {s:'BABA-USDT',   n:'BABA'},
+    {s:'NDX-USDT',    n:'NDX100'},
+    {s:'SPX-USDT',    n:'SPX500'},
+    {s:'XAU-USDT',    n:'XAU'},
+  ];
+
+  const found=[];
+  // Fetch tickers + klines in parallel batches
+  for(let i=0;i<BINGX_SYMS.length;i+=5){
+    await Promise.all(BINGX_SYMS.slice(i,i+5).map(async({s,n})=>{
+      try{
+        // Ticker for price/change
+        const tj=await tFetchJ(`${BINGX}/openApi/swap/v2/quote/ticker?symbol=${s}`,3000);
+        const td=tj?.data;
+        if(!td)return;
+
+        const spotSym=n+'USDT'; // unique key in our system
+        const chg=parseFloat(td.priceChangePercent||td.priceChange24hPct||0);
+        const co={
+          symbol:spotSym,
+          _bingxSym:s,
+          _displayName:n,
+          _isSynth:true,
+          lastPrice:String(td.lastPrice||td.last||0),
+          priceChangePercent:String(chg.toFixed?chg.toFixed(2):chg),
+          quoteVolume:String(td.volume||td.quoteVolume||0),
+        };
+
+        // Klines for chart + RSI
+        const kj=await tFetchJ(`${BINGX}/openApi/swap/v2/quote/klines?symbol=${s}&interval=1h&limit=50`,3000);
+        const kd=kj?.data||[];
+        if(kd.length){
+          const seen=new Set();
+          const bars=kd.map(k=>({
+            time:toMsk(Math.floor((k.time||k.openTime||k.t||0)/1000)),
+            open:parseFloat(k.open),high:parseFloat(k.high),
+            low:parseFloat(k.low),close:parseFloat(k.close)
+          })).filter(b=>b.time>0&&b.close>0&&!isNaN(b.close)&&!seen.has(b.time)&&seen.add(b.time))
+            .sort((a,b)=>a.time-b.time);
+          if(bars.length){
+            candleMap[spotSym]=bars;
+            if(rsiMap[spotSym]!=null)rsiPrev[spotSym]=rsiMap[spotSym];
+            rsiMap[spotSym]=calcRsiLast(bars.map(b=>b.close));
+            co.rsi=rsiMap[spotSym];
+            // 5m price change proxy (last 2 bars)
+            if(bars.length>=2){
+              const old=bars[bars.length-2].close,cur=bars[bars.length-1].close;
+              if(old>0)chg5Map[spotSym]=+((cur-old)/old*100).toFixed(2);
+            }
+          }
+        }
+        found.push(co);
+      }catch(e){console.warn('BingX synth',s,e.message);}
+    }));
+  }
+
+  // Sort: commodities first
+  const ORDER=['GOLD','XAU','SILVER','NDX','SPX'];
+  found.sort((a,b)=>{
+    const ai=ORDER.findIndex(k=>a._displayName.startsWith(k));
+    const bi=ORDER.findIndex(k=>b._displayName.startsWith(k));
+    if(ai>=0&&bi<0)return -1;if(bi>=0&&ai<0)return 1;
+    return a._displayName.localeCompare(b._displayName);
+  });
+  if(found.length>0){
+    synthCoins=found;
+    renderAll();
+  }else{
+    console.warn('BingX: нет данных по фондовым активам (возможно заблокирован)');
+  }
+}
+
+
+function oiLoad(){try{const s=localStorage.getItem(OI_LS_KEY);return s?JSON.parse(s):[]}catch{return[]}}
+function oiSave(snaps){try{localStorage.setItem(OI_LS_KEY,JSON.stringify(snaps.slice(-60)))}catch{}}
+
+async function fetchOI(){
+  const el=document.getElementById('st-oi');
+  el.textContent='OI…';el.style.color='#f59e0b';
+
+  // OKX публичный эндпоинт — без ключа, все USDT-перпетуальные свопы одним запросом
+  const OKX='https://www.okx.com/api/v5/public/open-interest?instType=SWAP';
+  let json=null;
+  try{const r=await tFetch(OKX,4000);if(r.ok)json=await r.json();}catch{}
+  if(!json?.data?.length)
+    try{const r=await tFetch(PROXY+encodeURIComponent(OKX),5000);if(r.ok)json=await r.json();}catch{}
+
+  if(!json?.data?.length){
+    el.textContent='OI: нет данных';el.style.color='#5c1a1a';
+    _oiEmptyMsg='OI недоступен (OKX не ответил)';
+    renderAll();return;
+  }
+
+  // Снимок: символ → кол-во контрактов (oi)
+  const snap={t:Date.now(),data:{}};
+  json.data.forEach(t=>{
+    // "BTC-USDT-SWAP" → "BTCUSDT", "BTC-USD-SWAP" → "BTCUSDT"
+    const sym=(t.instId||'').replace('-USDT-SWAP','USDT').replace('-USD-SWAP','USDT');
+    const oi=parseFloat(t.oi||t.oiCcy||0);
+    if(sym&&oi>0)snap.data[sym]=oi;
+  });
+
+  const snapCount=Object.keys(snap.data).length;
+  if(!snapCount){
+    el.textContent='OI: пустой ответ OKX';el.style.color='#f59e0b';
+    _oiEmptyMsg='OI: OKX вернул нули — возможно монеты не торгуются';
+    renderAll();return;
+  }
+
+  // Сохраняем в localStorage, держим 8ч
+  let snaps=oiLoad().filter(s=>Date.now()-s.t<8*3600000);
+  snaps.push(snap);
+  oiSave(snaps);
+
+  if(snaps.length<2){
+    _oiEmptyMsg=`OI: накапливаем историю (${snaps.length}/2, ~1 мин)…`;
+    el.textContent=`OI: 1й снимок (${snapCount} монет)`;el.style.color='#f59e0b';
+    document.getElementById('oi-src').textContent='— OKX SWAP open interest (localStorage)';
+    renderAll();return;
+  }
+
+  // Берём снимок ~1ч назад как базу сравнения
+  const cur=snaps[snaps.length-1];
+  const target=cur.t-60*60*1000;
+  const base=snaps.slice(0,-1).reduce((b,s)=>
+    Math.abs(s.t-target)<Math.abs(b.t-target)?s:b, snaps[0]);
+  const dtMin=Math.round((cur.t-base.t)/60000);
+
+  // Динамический порог по длине окна
+  const thr=10; // фиксированный порог 10% за ~1ч
+
+  // Сбросить старые OI сигналы
+  coins.forEach(co=>delete oiMap[co.symbol]);
+
+  let found=0;
+  Object.keys(snap.data).forEach(sym=>{
+    if(!coins.find(co=>co.symbol===sym))return;
+    const ov=base.data[sym]||0;
+    const cv=snap.data[sym]||0;
+    if(!ov||!cv)return;
+    const pct=+((cv-ov)/ov*100).toFixed(1);
+    if(Math.abs(pct)>=thr){oiMap[sym]=pct;found++;}
+  });
+
+  // Если никто не достиг порога — показываем топ-10 ближайших к 10%
+  if(found===0){
+    const candidates=[];
+    Object.keys(snap.data).forEach(sym=>{
+      if(!coins.find(co=>co.symbol===sym))return;
+      const ov=base.data[sym]||0,cv=snap.data[sym]||0;
+      if(!ov||!cv)return;
+      const pct=+((cv-ov)/ov*100).toFixed(1);
+      if(pct!==0)candidates.push({sym,pct});
+    });
+    candidates.sort((a,b)=>Math.abs(b.pct)-Math.abs(a.pct));
+    candidates.slice(0,10).forEach(({sym,pct})=>{oiMap[sym]=pct;found++;});
+  }
+  const isTopMode=found>0&&!candidates||found>0;
+  const modeNote=Object.values(oiMap).some(v=>Math.abs(v)>=thr)?'':`(топ-${found} мин. изм.)`;
+  _oiEmptyMsg=found>0?'':`Нет данных OI от OKX`;
+  el.textContent=`OI ✓ ${dtMin}м (${found})`;el.style.color='#4a6080';
+  document.getElementById('oi-src').textContent=
+    `— OKX Futures OI за ${dtMin}м (${snaps.length} снимков, порог ${thr}% ${modeNote})`;
+  renderAll();
+  setTimeout(()=>{Object.keys(oiMap).forEach(sym=>pushCandlesToRefs(sym))},200);
+}
+
+
+// ── LIQUIDATIONS (Binance → OKX → wick detection) ────────────
+async function fetchLiquidations(){
+  const el=document.getElementById('st-liq');
+  el.textContent='ЛИК…';el.style.color='#f59e0b';
+  const startTime=Date.now()-3600000;
+
+  // 1. Try Binance forced orders
+  const bnJ=await tFetchJ(`https://fapi.binance.com/fapi/v1/allForceOrders?limit=1000&startTime=${startTime}`,4000);
+  if(bnJ&&Array.isArray(bnJ)&&bnJ.length>0){
+    const agg={};
+    bnJ.forEach(o=>{
+      if(!o.symbol?.endsWith('USDT'))return;
+      const val=parseFloat(o.origQty||0)*parseFloat(o.avgPrice||o.price||0);
+      if(!agg[o.symbol])agg[o.symbol]={long:0,short:0};
+      if(o.side==='BUY')agg[o.symbol].short+=val;else agg[o.symbol].long+=val;
+    });
+    liqMap={};let found=0;
+    Object.entries(agg).forEach(([sym,d])=>{
+      const total=d.long+d.short;
+      if(total>=50000){liqMap[sym]={type:d.long>=d.short?'LONG_LIQ':'SHORT_LIQ',valueUSD:total,total};found++;}
+    });
+    if(found>0){
+      el.textContent=`ЛИК Binance ✓ (${found})`;el.style.color='#4a6080';
+      document.getElementById('liq-src').textContent=`— Binance forced orders за 1ч (${bnJ.length} ордеров)`;
+      renderAll();return;
+    }
+  }
+
+  // 2. Try OKX public liquidation orders
+  const okxJ=await tFetchJ('https://www.okx.com/api/v5/public/liquidation-orders?instType=SWAP&state=filled&limit=100',3000);
+  if(okxJ?.code==='0'&&okxJ.data?.length>0){
+    liqMap={};let found=0;
+    const agg={};
+    okxJ.data.forEach(entry=>{
+      const sym=(entry.instId||'').replace('-USDT-SWAP','USDT').replace('-USD-SWAP','USDT');
+      if(!coins.find(co=>co.symbol===sym))return;
+      (entry.details||[]).forEach(d=>{
+        const val=parseFloat(d.sz||0)*parseFloat(d.bkPx||d.px||0);
+        if(!agg[sym])agg[sym]={long:0,short:0};
+        if(d.posSide==='long')agg[sym].long+=val;else agg[sym].short+=val;
+      });
+    });
+    Object.entries(agg).forEach(([sym,d])=>{
+      const total=d.long+d.short;
+      if(total>10000){liqMap[sym]={type:d.long>=d.short?'LONG_LIQ':'SHORT_LIQ',valueUSD:total,total};found++;}
+    });
+    if(found>0){
+      el.textContent=`ЛИК OKX ✓ (${found})`;el.style.color='#4a6080';
+      document.getElementById('liq-src').textContent=`— OKX Futures liquidation orders`;
+      renderAll();return;
+    }
+  }
+
+  // 3. Wick-based detection from 1h candles (shooting stars & hammers)
+  liqMap={};
+  const allC=[...coins,...synthCoins];
+  allC.forEach(co=>{
+    const bars=candleMap[co.symbol];if(!bars||bars.length<2)return;
+    let best=null;
+    bars.slice(-6).forEach(bar=>{  // last 6 hours
+      const range=bar.high-bar.low;if(range<1e-10)return;
+      const upper=bar.high-Math.max(bar.close,bar.open);
+      const lower=Math.min(bar.close,bar.open)-bar.low;
+      const body=Math.abs(bar.close-bar.open);
+      const uR=upper/range, lR=lower/range, bR=body/range;
+      // Shooting star: upper wick ≥55%, body ≤35% → long sweep
+      if(uR>=0.55&&bR<=0.35){if(!best||uR>best.str)best={type:'LONG_LIQ',str:uR,total:parseFloat(co.quoteVolume)*uR}}
+      // Hammer: lower wick ≥55%, body ≤35% → short sweep
+      else if(lR>=0.55&&bR<=0.35){if(!best||lR>best.str)best={type:'SHORT_LIQ',str:lR,total:parseFloat(co.quoteVolume)*lR}}
+    });
+    if(best)liqMap[co.symbol]=best;
+  });
+  const liqCount=Object.keys(liqMap).length;
+  el.textContent=`ЛИК вики (${liqCount})`;el.style.color='#4a6080';
+  document.getElementById('liq-src').textContent=`— Вик-паттерны 1ч свечей (${liqCount} монет, порог вика ≥55%)`;
+  renderAll();
+}
+
+// ── BIG CHART ────────────────────────────────────────────
+// Timestamps are MSK-shifted (+3h) so LightweightCharts displays MSK time correctly
+const BOPTS={
+  layout:{background:{color:'#080b14'},textColor:'#4a6080'},
+  grid:{vertLines:{color:'#0e1525'},horzLines:{color:'#0e1525'}},
+  crosshair:{mode:1},
+  rightPriceScale:{borderColor:'#131a2e'},
+  timeScale:{borderColor:'#131a2e',timeVisible:true,secondsVisible:false},
+  handleScroll:true,handleScale:true
+};
+function initBig(){
+  if(bigInited)return;bigInited=true;
+  const bc=document.getElementById('bigcharts');
+  bc.style.display='flex';
+  const mc=document.getElementById('mc');
+  const rc=document.getElementById('rc');
+  const W=Math.max(window.innerWidth||1200,800);
+  try{
+    bigChart=LightweightCharts.createChart(mc,{
+      width:W,height:270,
+      layout:{background:{color:'#080b14'},textColor:'#c8d6e8'},
+      grid:{vertLines:{color:'#0e1525'},horzLines:{color:'#0e1525'}},
+      crosshair:{mode:1},rightPriceScale:{borderColor:'#131a2e'},
+      // Time axis hidden here — shown only under RSI below
+      timeScale:{borderColor:'#131a2e',timeVisible:false,visible:false},
+      handleScroll:true,handleScale:true
+    });
+    bigCandle=bigChart.addCandlestickSeries({
+      upColor:'#4ade80',downColor:'#f87171',
+      borderUpColor:'#4ade80',borderDownColor:'#f87171',
+      wickUpColor:'#4ade80',wickDownColor:'#f87171'
+    });
+    rsiChart=LightweightCharts.createChart(rc,{
+      width:W,height:110,
+      layout:{background:{color:'#080b14'},textColor:'#c8d6e8'},
+      grid:{vertLines:{color:'#0e1525'},horzLines:{color:'#0e1525'}},
+      crosshair:{mode:1},
+      rightPriceScale:{borderColor:'#131a2e',scaleMargins:{top:0.1,bottom:0.1}},
+      // Time axis shown HERE so labels appear below RSI (not overlapping main chart)
+      timeScale:{borderColor:'#131a2e',timeVisible:true,secondsVisible:false},
+      handleScroll:true,handleScale:true
+    });
+    rsiLine=rsiChart.addLineSeries({color:'#a3e635',lineWidth:1,priceLineVisible:false,lastValueVisible:true});
+    // RSI watermark label on left side
+    try{rsiChart.applyOptions({watermark:{visible:true,fontSize:10,horzAlign:'left',vertAlign:'top',color:'rgba(100,150,200,0.6)',text:'RSI (14)'}})}catch{}
+    // Simple price lines without axisLabelVisible (not supported in v4.1.1)
+    rsiLine.createPriceLine({price:70,color:'#fb923c',lineWidth:1,lineStyle:2});
+    rsiLine.createPriceLine({price:30,color:'#38bdf8',lineWidth:1,lineStyle:2});
+    // Sync timescales
+    let sync=false;
+    bigChart.timeScale().subscribeVisibleLogicalRangeChange(r=>{if(!sync&&r){sync=true;rsiChart.timeScale().setVisibleLogicalRange(r);sync=false}});
+    rsiChart.timeScale().subscribeVisibleLogicalRangeChange(r=>{if(!sync&&r){sync=true;bigChart.timeScale().setVisibleLogicalRange(r);sync=false}});
+    // Resize on window size change
+    window.addEventListener('resize',()=>{
+      const nw=window.innerWidth;
+      try{if(bigChart)bigChart.applyOptions({width:nw})}catch{}
+      try{if(rsiChart)rsiChart.applyOptions({width:nw})}catch{}
+    });
+  }catch(e){
+    console.error('initBig FAILED:',e.message);
+    bigInited=false;bigChart=null;bigCandle=null;rsiChart=null;rsiLine=null;
+    const ns=document.getElementById('no-sel');
+    if(ns){ns.textContent='Ошибка графика: '+e.message;ns.style.color='#f87171';ns.style.display='block';}
+  }
+}
+
+async function loadBig(sym,tf,isSynth){
+  initBig();
+  if(!bigCandle||!bigChart){
+    const ns=document.getElementById('no-sel');
+    if(ns){ns.textContent='График не инициализирован — обновите страницу';ns.style.color='#f87171';ns.style.display='block';}
+    return;
+  }
+  document.getElementById('no-sel').style.display='none';
+  document.getElementById('cinfo').style.display='flex';
+  try{
+    let bars=null;
+    if(isSynth){
+      const co=synthCoins.find(x=>x.symbol===sym);if(!co)return;
+      const j=await tFetchJ(`${MEXCC}/kline/${co._futSym}?interval=${MEXC_TF[tf]||'Hour1'}&limit=300`,6000);
+      const d=j?.data;
+      if(d?.time&&d?.close)bars=d.time.map((t,i)=>({time:toMsk(Math.floor(t/1000)||t),open:parseFloat(d.open[i]),high:parseFloat(d.high[i]),low:parseFloat(d.low[i]),close:parseFloat(d.close[i])}));
+      else if(Array.isArray(d))bars=d.map(x=>({time:toMsk(Math.floor((x[0]||x.time)/1000)),open:parseFloat(x[1]||x.open),high:parseFloat(x[3]||x.high),low:parseFloat(x[4]||x.low),close:parseFloat(x[2]||x.close)}));
+    } else if(tf==='1h'&&candleMap[sym]?.length>=10){
+      // USE CACHE to avoid HTTP 429 rate limit (1h data already loaded)
+      bars=candleMap[sym];
+    } else {
+      // Fetch different timeframe
+      try{
+        const k=await fetchAuto(`${MEXC}/klines?symbol=${sym}&interval=${MEXC_TF[tf]||'60m'}&limit=300`);
+        const raw=k.map(x=>({time:toMsk(Math.floor(parseInt(x[0])/1000)),open:parseFloat(x[1]),high:parseFloat(x[2]),low:parseFloat(x[3]),close:parseFloat(x[4])}));
+        const seen=new Set();
+        bars=raw.filter(b=>b.time>0&&b.close>0&&!isNaN(b.close)&&!seen.has(b.time)&&seen.add(b.time)).sort((a,b)=>a.time-b.time);
+      }catch(e){
+        if(candleMap[sym]?.length){bars=candleMap[sym];}
+        else throw e;
+      }
+    }
+    if(!bars?.length){
+      document.getElementById('no-sel').textContent='Нет данных для '+sym;
+      document.getElementById('no-sel').style.color='#f59e0b';
+      document.getElementById('no-sel').style.display='block';
+      return;
+    }
+    bigCandle.setData(bars);
+    const closes=bars.map(b=>b.close),times=bars.map(b=>b.time);
+    rsiLine.setData(calcRsiArr(closes).map((v,i)=>v!=null?{time:times[i],value:+v.toFixed(2)}:null).filter(Boolean));
+    try{bigChart.timeScale().scrollToRealtime()}catch{try{bigChart.timeScale().fitContent()}catch{}} // показать последнюю свечу справа
+    try{rsiChart.timeScale().scrollToRealtime()}catch{try{rsiChart.timeScale().fitContent()}catch{}}
+  }catch(e){
+    console.error('loadBig:',e.message);
+    document.getElementById('no-sel').textContent='Ошибка: '+e.message.slice(0,80);
+    document.getElementById('no-sel').style.color='#f87171';
+    document.getElementById('no-sel').style.display='block';
+  }
+}
+
+function connectSelWS(sym,tf){
+  if(selWS){clearTimeout(selWSTimer);try{selWS.close()}catch{} selWS=null}
+  if(selIsSynth)return; // no WS for synthetics
+  selWS=new WebSocket(WS_URL);
+  selWS.onopen=()=>{
+    selWS.send(JSON.stringify({method:'SUBSCRIPTION',params:[`spot@public.kline.v3.api@${sym}@${TF_WS[tf]||'Min60'}`]}));
+    selWS._p=setInterval(()=>{if(selWS.readyState===1)selWS.send(JSON.stringify({method:'PING'}))},20000);
+  };
+  selWS.onmessage=e=>{
+    try{
+      const m=JSON.parse(e.data);if(!m.d?.k)return;
+      const k=m.d.k;if(selSymbol!==sym)return;
+      const bar={time:toMsk(Math.floor(parseInt(k.t)/1000)),open:parseFloat(k.o),high:parseFloat(k.h),low:parseFloat(k.l),close:parseFloat(k.c)};
+      if(bigCandle){
+        bigCandle.update(bar);
+        // Обновляем RSI последней точкой
+        if(rsiLine&&candleMap[sym]){
+          const allBars=[...candleMap[sym]];
+          const last=allBars[allBars.length-1];
+          if(last&&last.time===bar.time)allBars[allBars.length-1]=bar;
+          else allBars.push(bar);
+          const cls=allBars.map(b=>b.close);
+          const rsiArr=calcRsiArr(cls);
+          const lastRsi=rsiArr[rsiArr.length-1];
+          if(lastRsi!=null)try{rsiLine.update({time:bar.time,value:+lastRsi.toFixed(2)})}catch{}
+        }
+        // Авто-прокрутка к последней свече (если пользователь у правого края)
+        try{try{bigChart.timeScale().scrollToRealtime()}catch{try{bigChart.timeScale().fitContent()}catch{}}}catch{}
+      }
+    }catch{}
+  };
+  selWS.onerror=()=>{};
+  selWS.onclose=()=>{clearInterval(selWS?._p);selWSTimer=setTimeout(()=>{if(selSymbol===sym&&!selIsSynth)connectSelWS(sym,currentTf)},2000)};
+}
+
+// ── HEADER / SELECT ──────────────────────────────────────
+function updateHeader(c){
+  const ch=parseFloat(c.priceChangePercent);
+  const name=c._displayName||c.symbol.replace('USDT','');
+  document.getElementById('cname').textContent=name+(c._isSynth?' [F]':'/USDT');
+  document.getElementById('cprice').textContent=' $'+fP(c.lastPrice);
+  const el=document.getElementById('cchg');el.textContent=' '+(ch>0?'+':'')+ch.toFixed(2)+'% 24ч';el.style.color=ch>0?'#4ade80':ch<0?'#f87171':'#4a6080';
+  document.getElementById('cvol').textContent=' Vol:$'+fV(c.quoteVolume);
+  const oi=oiMap[c.symbol];const oel=document.getElementById('coi');
+  oel.textContent=oi!=null?' OI:'+(oi>0?'+':'')+oi+'%':'';oel.style.color=oi>0?'#c084fc':oi<0?'#f472b6':'#5c7099';
+}
+function selectCoin(sym,isSynth=false){
+  selSymbol=sym; selIsSynth=isSynth;
+  document.getElementById('no-sel').style.display='none';
+  document.getElementById('cinfo').style.display='flex';
+  const pool=isSynth?synthCoins:coins;
+  const c=pool.find(x=>x.symbol===sym);if(c)updateHeader(c);
+  for(const ro of Object.values(refs))Object.values(ro).forEach(r=>r.root.classList.toggle('sel',r.root.dataset.sym===sym));
+  loadBig(sym,currentTf,isSynth);
+  connectSelWS(sym,currentTf);
+  document.getElementById('scroll').scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── TAB SWITCH ───────────────────────────────────────────
+function switchTab(tab){
+  activeTab=tab;
+  document.getElementById('panel-crypto').style.display=tab==='crypto'?'block':'none';
+  document.getElementById('panel-stocks').style.display=tab==='stocks'?'block':'none';
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+}
+
+// ── CONTROLS ─────────────────────────────────────────────
+// ── PUSH CANDLES TO REFS ────────────────────────────────
+function pushCandlesToRefs(sym){
+  const bars=candleMap[sym];
+  if(!bars||!bars.length)return;
+  const scrollEl=document.getElementById('scroll');
+  for(const ro of Object.values(refs)){
+    const r=ro[sym];
+    if(!r)continue;
+    if(r.chartInited&&r.series){
+      try{r.series.setData(bars);r.chart.timeScale().fitContent()}catch{}
+    }else if(!r.chartInited&&r.root){
+      const rect=r.root.getBoundingClientRect();
+      const sRect=scrollEl?scrollEl.getBoundingClientRect():{top:0,bottom:window.innerHeight};
+      if(rect.bottom>=sRect.top-600&&rect.top<=sRect.bottom+600){
+        r.chartInited=true;
+        const miniEl=r.root.querySelector('.card-mini');
+        if(!miniEl)continue;
+        const{chart,series}=makeMini(miniEl);
+        r.chart=chart;r.series=series;
+        try{series.setData(bars);chart.timeScale().fitContent()}catch{}
+      }
+    }
+  }
+}
+
+// ── 1H KLINES + RSI ─────────────────────────────────────
+async function loadKlines(){
+  const syms=coins.map(c=>c.symbol);
+  const el=document.getElementById('st-charts');
+  for(let i=0;i<syms.length;i+=8){
+    if(el)el.textContent=`Графики ${Math.round(i/syms.length*100)}%`;
+    await Promise.all(syms.slice(i,i+8).map(async sym=>{
+      try{
+        const k=await fetchAuto(`${MEXC}/klines?symbol=${sym}&interval=60m&limit=50`);
+        if(rsiMap[sym]!=null)rsiPrev[sym]=rsiMap[sym];
+        const raw=k.map(x=>({time:toMsk(Math.floor(parseInt(x[0])/1000)),open:parseFloat(x[1]),high:parseFloat(x[2]),low:parseFloat(x[3]),close:parseFloat(x[4])}));
+        const seen=new Set();
+        candleMap[sym]=raw.filter(b=>b.time>0&&b.close>0&&!isNaN(b.close)&&!seen.has(b.time)&&seen.add(b.time)).sort((a,b)=>a.time-b.time);
+        rsiMap[sym]=calcRsiLast(candleMap[sym].map(b=>b.close));
+        coins.forEach(co=>{if(co.symbol===sym)co.rsi=rsiMap[sym]});
+        pushCandlesToRefs(sym);
+      }catch(e){console.warn(sym,e.message)}
+    }));
+    renderAll();
+  }
+  if(el){el.textContent='Графики ✓';el.style.color='#4a6080';}
+}
+
+// ── 5M CHANGE (PUMP/DUMP) ────────────────────────────────
+async function loadChg5(){
+  const syms=coins.map(c=>c.symbol);
+  for(let i=0;i<syms.length;i+=10){
+    await Promise.all(syms.slice(i,i+10).map(async sym=>{
+      try{
+        const k=await fetchAuto(`${MEXC}/klines?symbol=${sym}&interval=5m&limit=3`);
+        if(k?.length>=2){const old=parseFloat(k[0][4]),cur=parseFloat(k[k.length-1][4]);if(old>0)chg5Map[sym]=+((cur-old)/old*100).toFixed(2)}
+      }catch{}
+    }));
+  }
+  // Synth proxy from last 2 bars
+  synthCoins.forEach(co=>{
+    const bars=candleMap[co.symbol];
+    if(bars?.length>=2){const old=bars[bars.length-2].close,cur=bars[bars.length-1].close;if(old>0)chg5Map[co.symbol]=+((cur-old)/old*100).toFixed(2)}
+  });
+  renderAll();
+}
+
+
+document.getElementById('flt').addEventListener('click',e=>{
+  const tb=e.target.closest('.tab-btn');
+  if(tb){switchTab(tb.dataset.tab);return}
+  const b=e.target.closest('.fb');if(!b?.dataset.f)return;
+  filter=(filter===b.dataset.f&&b.dataset.f!=='ALL')?'ALL':b.dataset.f;
+  document.querySelectorAll('.fb[data-f]').forEach(x=>x.classList.toggle('on',x.dataset.f===filter||(filter==='ALL'&&x.dataset.f==='ALL')));
+  renderAll();
+});
+document.getElementById('tfs').addEventListener('click',e=>{
+  const b=e.target.closest('.tf');if(!b)return;
+  currentTf=b.dataset.tf;document.querySelectorAll('.tf').forEach(x=>x.classList.toggle('on',x===b));
+  const lbl=document.getElementById('grid-tf-label');
+  if(lbl)lbl.textContent='— графики '+currentTf+' · мини-чарты обновляются в реальном времени';
+  if(selSymbol)loadBig(selSymbol,currentTf,selIsSynth);
+  if(selSymbol&&!selIsSynth)connectSelWS(selSymbol,currentTf);
+});
+
+// ── BOOT ─────────────────────────────────────────────────
+(async()=>{
+  // Search input listener
+  ['strip-pd','strip-liq','strip-oi','strip-rsi'].forEach(id=>initStrip(document.getElementById(id)));
+  document.getElementById('upd').textContent='Подключение к MEXC…';
+  try{
+    await fetchTickers();
+    if(coins.length===0){
+      document.getElementById('upd').textContent='Ошибка: нет данных от MEXC';
+      document.getElementById('dot').style.background='#f87171';
+      // Retry after 5s
+      setTimeout(async()=>{try{await fetchTickers()}catch{}},5000);
+      return;
+    }
+    setInterval(fetchTickers,15000);
+    document.getElementById('upd').textContent='Загрузка графиков…';
+    // Основные данные — только MEXC (всегда доступен)
+    await Promise.all([loadKlines(),loadChg5()]);
+    // Дополнительные данные — запускаем фоново, не блокируем загрузку
+    fetchOI().catch(()=>{});
+    fetchLiquidations().catch(()=>{});
+    fetchSynthetics().catch(()=>{});
+    // Фоновые данные не блокируют скринер — он уже работает
+    // Force-refresh every chart after all data is loaded
+    setTimeout(()=>{
+      Object.keys(candleMap).forEach(sym=>pushCandlesToRefs(sym));
+      renderAll();
+    }, 500);
+    initPriceWS(coins.map(c=>c.symbol));
+    setInterval(loadChg5,60000);
+    setInterval(loadKlines,60000);
+    setInterval(fetchOI,60000);
+    setInterval(fetchLiquidations,90000);
+    setInterval(fetchSynthetics,120000);
+    setInterval(()=>initPriceWS(coins.map(c=>c.symbol)),30*60*1000);
+  }catch(e){
+    document.getElementById('dot').style.background='#f87171';
+    document.getElementById('upd').textContent='Ошибка: '+e.message;
+    console.error('Boot error:', e);
+    // Auto-retry after 10s
+    setTimeout(async()=>{
+      document.getElementById('upd').textContent='Повтор подключения…';
+      try{await fetchTickers();setInterval(fetchTickers,15000)}catch(e2){console.error(e2)}
+    },10000);
+  }
+})();
+</script>
+</body>
+</html>
