@@ -933,16 +933,7 @@ async function loadBig(sym,tf,isSynth){
     bigCandle.setData(bars);
     const closes=bars.map(b=>b.close),times=bars.map(b=>b.time);
     rsiLine.setData(calcRsiArr(closes).map((v,i)=>v!=null?{time:times[i],value:+v.toFixed(2)}:null).filter(Boolean));
-    // Показываем как на бирже: текущая свеча видна + правый отступ до "сейчас"
-    try{
-      const lastBar=bars[bars.length-1];
-      const barDur=bars.length>1?bars[bars.length-1].time-bars[bars.length-2].time:3600;
-      const nowMsk=mskHourBoundary();
-      const toTime=Math.max(nowMsk,lastBar.time)+barDur*3; // текущее время + 3 бара справа
-      const fromTime=lastBar.time-barDur*Math.min(bars.length-1,59); // последние 60 баров
-      bigChart.timeScale().setVisibleRange({from:fromTime,to:toTime});
-      rsiChart.timeScale().setVisibleRange({from:fromTime,to:toTime});
-    }catch{bigChart.timeScale().fitContent();rsiChart.timeScale().fitContent();}
+    try{bigChart.timeScale().fitContent()}catch{} // показать последнюю свечу справа
     try{rsiChart.timeScale().fitContent()}catch{}
   }catch(e){
     console.error('loadBig:',e.message);
