@@ -320,9 +320,9 @@ function buildCard(c,container,refsObj,lazy=true,extraClass=''){
   div.className='card'+(extraClass?' '+extraClass:'');
   div.dataset.sym=c.symbol;
   div.addEventListener('click',()=>selectCoin(c.symbol,c._isSynth));
-  div.innerHTML=`<div class="card-top"><span class="card-sym">${c._displayName||c.symbol.replace('USDT','')}<span style="color:#1e2740;font-weight:400">/${c._isSynth?'F':'U'}</span></span><span class="card-chg"></span></div><div class="card-mini"></div><div class="card-bot"><span class="card-metric"></span><span class="card-badges"></span></div>`;
+  div.innerHTML=`<div class="card-top"><span class="card-sym">${c._displayName||c.symbol.replace('USDT','')}<span style="color:#1e2740;font-weight:400">/${c._isSynth?'F':'U'}</span></span><span class="card-chg"></span></div><div class="card-mini"></div><div class="card-bot"><span class="card-metric"></span><span class="card-tf" style="font-size:8px;color:#3a5070;margin:0 auto">1ч</span><span class="card-badges"></span></div>`;
   container.appendChild(div);
-  const r={root:div,chgEl:div.querySelector('.card-chg'),metricEl:div.querySelector('.card-metric'),bdEl:div.querySelector('.card-badges'),chart:null,series:null,chartInited:false};
+  const r={root:div,chgEl:div.querySelector('.card-chg'),metricEl:div.querySelector('.card-metric'),tfEl:div.querySelector('.card-tf'),bdEl:div.querySelector('.card-badges'),chart:null,series:null,chartInited:false};
   refsObj[c.symbol]=r;
   if(lazy)chartObs.observe(div);
   else{r.chartInited=true;const{chart,series}=makeMini(div.querySelector('.card-mini'));r.chart=chart;r.series=series}
@@ -650,6 +650,8 @@ async function switchSectionTf(secId,tf){
   const missing=syms.filter(sym=>!getTfBars(sym,tf)?.length);
   console.log('Need to fetch',missing.length,'coins for TF',tf);
   if(missing.length)await fetchTfBatch(missing,tf,secId);
+  // Update TF label on all cards in this section
+  Object.values(refs[secId]||{}).forEach(r=>{if(r?.tfEl)r.tfEl.textContent=tf;});
 }
 
 async function fetchOI(){
@@ -933,9 +935,10 @@ async function loadBig(sym,tf,isSynth){
     try{
       const lastBar=bars[bars.length-1];
       const barDur=bars.length>1?bars[bars.length-1].time-bars[bars.length-2].time:3600;
-      const nowMsk=mskHourBoundary();
-      const toTime=Math.max(nowMsk,lastBar.time)+barDur*3; // текущее время + 3 бара справа
-      const fromTime=lastBar.time-barDur*Math.min(bars.length-1,59); // последние 60 баров
+      // Точное текущее MSK время (не граница часа)
+      const nowMsk=Math.floor(Date.now()/1000)+MSK;
+      const toTime=Math.max(nowMsk,lastBar.time)+barDur*5; // текущее время + 5 баров вправо
+      const fromTime=lastBar.time-barDur*Math.min(bars.length-1,69); // последние 70 баров
       bigChart.timeScale().setVisibleRange({from:fromTime,to:toTime});
       rsiChart.timeScale().setVisibleRange({from:fromTime,to:toTime});
     }catch{bigChart.timeScale().fitContent();rsiChart.timeScale().fitContent();}
