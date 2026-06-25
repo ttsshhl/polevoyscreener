@@ -306,9 +306,30 @@ function fP(p){const n=parseFloat(p);return n>=1000?n.toLocaleString('en',{maxim
 function fPct(v,d=2){return v==null?'—':(v>0?'+':'')+v.toFixed(d)+'%'}
 
 // ── MINI CHART ───────────────────────────────────────────
-const MOPTS={layout:{background:{color:'transparent'},textColor:'#3a5070'},grid:{vertLines:{visible:false},horzLines:{visible:false}},rightPriceScale:{visible:false},leftPriceScale:{visible:false},timeScale:{visible:true,timeVisible:true,secondsVisible:false,borderVisible:false,ticksVisible:false},crosshair:{vertLine:{visible:false,labelVisible:false},horzLine:{visible:false,labelVisible:false}},handleScroll:false,handleScale:false};
+const MOPTS={
+  layout:{background:{color:'transparent'},textColor:'#c8d6e8'},
+  grid:{vertLines:{visible:false},horzLines:{visible:false}},
+  rightPriceScale:{visible:false},
+  leftPriceScale:{visible:false},
+  timeScale:{
+    visible:true,
+    timeVisible:true,
+    secondsVisible:false,
+    borderVisible:false,
+    // Всегда показываем часы (не числа дней)
+    tickMarkFormatter:(t)=>{
+      const d=new Date(t*1000);
+      const h=('0'+d.getUTCHours()).slice(-2);
+      const m=d.getUTCMinutes();
+      return m===0?h+':00':h+':'+('0'+m).slice(-2);
+    }
+  },
+  crosshair:{vertLine:{visible:false,labelVisible:false},horzLine:{visible:false,labelVisible:false}},
+  handleScroll:false,
+  handleScale:false
+};
 function makeMini(el){
-  const chart=LightweightCharts.createChart(el,{...MOPTS,width:CARD_W,height:CARD_H,localization:{timeFormatter:(t)=>{const d=new Date(t*1000);return('0'+d.getUTCHours()).slice(-2)+':'+('0'+d.getUTCMinutes()).slice(-2);}}});
+  const chart=LightweightCharts.createChart(el,{...MOPTS,width:CARD_W,height:CARD_H});
   const series=chart.addCandlestickSeries({upColor:'#4ade80',downColor:'#f87171',borderVisible:false,wickUpColor:'#4ade80',wickDownColor:'#f87171'});
   new ResizeObserver(e=>{const{width,height}=e[0].contentRect;if(width>0&&height>0)chart.applyOptions({width,height})}).observe(el);
   return{chart,series};
