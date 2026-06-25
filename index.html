@@ -220,10 +220,14 @@ const chartObs=new IntersectionObserver(entries=>{
         r.chartInited=true;
         const miniEl=div.querySelector('.card-mini');
         if(!miniEl)return;
-        const{chart,series}=makeMini(miniEl);
-        r.chart=chart;r.series=series;
+        const{chart,series,vol}=makeMini(miniEl);
+        r.chart=chart;r.series=series;r.vol=vol||null;
         const bars=candleMap[sym];
-        if(bars?.length)try{series.setData(bars);chart.timeScale().fitContent()}catch{}
+        if(bars?.length){
+          const disp=bars.slice(-18);
+          try{series.setData(disp);chart.timeScale().fitContent();}catch{}
+          try{if(r.vol)r.vol.setData(disp.map(b=>({time:b.time,value:b.vol||0,color:b.close>=b.open?'rgba(74,222,128,0.25)':'rgba(248,113,113,0.25)'})));}catch{}
+        }
         chartObs.unobserve(div);return;
       }
     }
@@ -331,8 +335,16 @@ const MOPTS={
 function makeMini(el){
   const chart=LightweightCharts.createChart(el,{...MOPTS,width:CARD_W,height:CARD_H});
   const series=chart.addCandlestickSeries({upColor:'#4ade80',downColor:'#f87171',borderVisible:false,wickUpColor:'#4ade80',wickDownColor:'#f87171'});
+  // Volume histogram
+  const vol=chart.addHistogramSeries({
+    color:'rgba(100,150,200,0.25)',
+    priceFormat:{type:'volume'},
+    priceScaleId:'vol',
+    scaleMargins:{top:0.85,bottom:0},
+  });
+  try{chart.priceScale('vol').applyOptions({scaleMargins:{top:0.85,bottom:0},borderVisible:false,visible:false});}catch{}
   new ResizeObserver(e=>{const{width,height}=e[0].contentRect;if(width>0&&height>0)chart.applyOptions({width,height})}).observe(el);
-  return{chart,series};
+  return{chart,series,vol};
 }
 
 // ── BUILD / UPDATE CARD ──────────────────────────────────
@@ -341,15 +353,12 @@ function buildCard(c,container,refsObj,lazy=true,extraClass=''){
   div.className='card'+(extraClass?' '+extraClass:'');
   div.dataset.sym=c.symbol;
   div.addEventListener('click',()=>selectCoin(c.symbol,c._isSynth));
-  div.innerHTML=`<div class="card-top"><span class="card-sym">${c._displayName||c.symbol.replace('USDT','')}<span style="color:#1e2740;font-weight:400">/${c._isSynth?'F':'U'}</span></span><span class="card-chg"></span></div><div class="card-mini"></div><div class="card-bot"><span class="card-metric"></span><span class="card-tf" style="font-size:8px;color:#6688aa;margin-left:2px;flex-shrink:0">1ч</span><span class="card-badges"></span></div>`;
+  div.innerHTML=`<div class="card-top"><span class="card-sym">${c._displayName||c.symbol.replace('USDT','')}<span style="color:#1e2740;font-weight:400">/${c._isSynth?'F':'U'}</span></span><span class="card-chg"></span></div><div class="card-mini"></div><div class="card-bot"><span class="card-metric"></span><span class="card-badges"></span></div>`;
   container.appendChild(div);
-  const r={root:div,chgEl:div.querySelector('.card-chg'),metricEl:div.querySelector('.card-metric'),tfEl:div.querySelector('.card-tf'),bdEl:div.querySelector('.card-badges'),chart:null,series:null,chartInited:false};
+  const r={root:div,chgEl:div.querySelector('.card-chg'),metricEl:div.querySelector('.card-metric'),bdEl:div.querySelector('.card-badges'),chart:null,series:null,chartInited:false};
   refsObj[c.symbol]=r;
   // Set initial TF label — find which section this belongs to
-  if(r.tfEl){
-    const secId=Object.keys(refs).find(k=>refsObj===refs[k]);
-    if(secId&&sectionTf[secId])r.tfEl.textContent=sectionTf[secId];
-  }
+
   if(lazy)chartObs.observe(div);
   else{r.chartInited=true;const{chart,series}=makeMini(div.querySelector('.card-mini'));r.chart=chart;r.series=series}
 }
@@ -363,7 +372,7 @@ function updateCard(c,r,metricFn){
   r.root.classList.toggle('sel',c.symbol===selSymbol);
   if(metricFn){const{text,color}=metricFn(c);r.metricEl.textContent=text;r.metricEl.style.color=color||'#5c7099'}
   else{r.metricEl.textContent='$'+fV(c.quoteVolume);r.metricEl.style.color='#2a3d60'}
-  if(r.series&&candleMap[c.symbol]?.length)try{r.series.setData(candleMap[c.symbol]);r.chart.timeScale().fitContent()}catch{}
+  if(r.series&&candleMap[c.symbol]?.length)try{r.series.setData((candleMap[c.symbol]||[]).slice(-18));r.chart.timeScale().fitContent()}catch{}
 }
 
 // ── STRIP SCROLL ─────────────────────────────────────────
@@ -647,7 +656,9 @@ async function fetchTfBatch(syms,tf,secId){
       if(!bars?.length)return;
       const r=(refs[secId]||{})[sym];
       if(r?.series&&r.chartInited){
-        try{r.series.setData(bars);r.chart.timeScale().fitContent();}catch(e){}
+        try{const disp18=bars.slice(-18);r.series.setData(disp18);r.chart.timeScale().fitContent();
+          try{if(r.vol)r.vol.setData(disp18.map(b=>({time:b.time,value:b.vol||0,color:b.close>=b.open?'rgba(74,222,128,0.25)':'rgba(248,113,113,0.25)'})));}catch{}
+        }catch(e){}
       }
     });
   }
@@ -676,8 +687,7 @@ async function switchSectionTf(secId,tf){
   const missing=syms.filter(sym=>!getTfBars(sym,tf)?.length);
   console.log('Need to fetch',missing.length,'coins for TF',tf);
   if(missing.length)await fetchTfBatch(missing,tf,secId);
-  // Update TF label on all cards in this section
-  Object.values(refs[secId]||{}).forEach(r=>{if(r?.tfEl)r.tfEl.textContent=tf;});
+
 }
 
 async function fetchOI(){
@@ -940,7 +950,7 @@ async function loadBig(sym,tf,isSynth){
       // Fetch different timeframe
       try{
         const k=await fetchAuto(`${MEXC}/klines?symbol=${sym}&interval=${MEXC_TF[tf]||'60m'}&limit=300`);
-        const raw=k.map(x=>({time:toMsk(Math.floor(parseInt(x[0])/1000)),open:parseFloat(x[1]),high:parseFloat(x[2]),low:parseFloat(x[3]),close:parseFloat(x[4])}));
+        const raw=k.map(x=>({time:toMsk(Math.floor(parseInt(x[0])/1000)),open:parseFloat(x[1]),high:parseFloat(x[2]),low:parseFloat(x[3]),close:parseFloat(x[4]),vol:parseFloat(x[7]||x[5]||0)}));
         const seen=new Set();
         bars=raw.filter(b=>b.time>0&&b.close>0&&!isNaN(b.close)&&!seen.has(b.time)&&seen.add(b.time)).sort((a,b)=>a.time-b.time);
       }catch(e){
@@ -1072,8 +1082,8 @@ function pushCandlesToRefs(sym){
         r.chartInited=true;
         const miniEl=r.root.querySelector('.card-mini');
         if(!miniEl)continue;
-        const{chart,series}=makeMini(miniEl);
-        r.chart=chart;r.series=series;
+        const{chart,series,vol}=makeMini(miniEl);
+        r.chart=chart;r.series=series;r.vol=vol||null;
         try{series.setData(bars);chart.timeScale().fitContent()}catch{}
       }
     }
@@ -1090,7 +1100,7 @@ async function loadKlines(){
       try{
         const k=await fetchAuto(`${MEXC}/klines?symbol=${sym}&interval=60m&limit=50`);
         if(rsiMap[sym]!=null)rsiPrev[sym]=rsiMap[sym];
-        const raw=k.map(x=>({time:toMsk(Math.floor(parseInt(x[0])/1000)),open:parseFloat(x[1]),high:parseFloat(x[2]),low:parseFloat(x[3]),close:parseFloat(x[4])}));
+        const raw=k.map(x=>({time:toMsk(Math.floor(parseInt(x[0])/1000)),open:parseFloat(x[1]),high:parseFloat(x[2]),low:parseFloat(x[3]),close:parseFloat(x[4]),vol:parseFloat(x[7]||x[5]||0)}));
         const seen=new Set();
         candleMap[sym]=raw.filter(b=>b.time>0&&b.close>0&&!isNaN(b.close)&&!seen.has(b.time)&&seen.add(b.time)).sort((a,b)=>a.time-b.time);
         rsiMap[sym]=calcRsiLast(candleMap[sym].map(b=>b.close));
