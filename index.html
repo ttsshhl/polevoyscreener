@@ -61,7 +61,7 @@ body{background:#0d1119;color:#c8d6e8;font-family:'JetBrains Mono','Fira Code',m
 .card-sym{font-size:10px;font-weight:700;color:#dde8ff}
 .card-chg{font-size:10px;font-weight:700}
 .card-mini{height:58px;width:100%;display:block}
-.card-bot{display:flex;justify-content:space-between;align-items:center;padding:2px 7px 5px;gap:4px}
+.card-bot{display:flex;justify-content:space-between;align-items:center;padding:2px 7px 5px;gap:3px;flex-wrap:nowrap}
 .card-metric{font-size:9px;font-weight:700}
 .card-badges{display:flex;gap:2px;flex-wrap:wrap;justify-content:flex-end}
 .bd{font-size:7px;padding:1px 4px;border-radius:2px;font-weight:700;white-space:nowrap}
@@ -320,10 +320,15 @@ function buildCard(c,container,refsObj,lazy=true,extraClass=''){
   div.className='card'+(extraClass?' '+extraClass:'');
   div.dataset.sym=c.symbol;
   div.addEventListener('click',()=>selectCoin(c.symbol,c._isSynth));
-  div.innerHTML=`<div class="card-top"><span class="card-sym">${c._displayName||c.symbol.replace('USDT','')}<span style="color:#1e2740;font-weight:400">/${c._isSynth?'F':'U'}</span></span><span class="card-chg"></span></div><div class="card-mini"></div><div class="card-bot"><span class="card-metric"></span><span class="card-tf" style="font-size:8px;color:#3a5070;margin:0 auto">1ч</span><span class="card-badges"></span></div>`;
+  div.innerHTML=`<div class="card-top"><span class="card-sym">${c._displayName||c.symbol.replace('USDT','')}<span style="color:#1e2740;font-weight:400">/${c._isSynth?'F':'U'}</span></span><span class="card-chg"></span></div><div class="card-mini"></div><div class="card-bot"><span class="card-metric"></span><span class="card-tf" style="font-size:8px;color:#6688aa;margin-left:2px;flex-shrink:0">1ч</span><span class="card-badges"></span></div>`;
   container.appendChild(div);
   const r={root:div,chgEl:div.querySelector('.card-chg'),metricEl:div.querySelector('.card-metric'),tfEl:div.querySelector('.card-tf'),bdEl:div.querySelector('.card-badges'),chart:null,series:null,chartInited:false};
   refsObj[c.symbol]=r;
+  // Set initial TF label — find which section this belongs to
+  if(r.tfEl){
+    const secId=Object.keys(refs).find(k=>refsObj===refs[k]);
+    if(secId&&sectionTf[secId])r.tfEl.textContent=sectionTf[secId];
+  }
   if(lazy)chartObs.observe(div);
   else{r.chartInited=true;const{chart,series}=makeMini(div.querySelector('.card-mini'));r.chart=chart;r.series=series}
 }
@@ -942,6 +947,15 @@ async function loadBig(sym,tf,isSynth){
       bigChart.timeScale().setVisibleRange({from:fromTime,to:toTime});
       rsiChart.timeScale().setVisibleRange({from:fromTime,to:toTime});
     }catch{bigChart.timeScale().fitContent();rsiChart.timeScale().fitContent();}
+    // Добавляем текущую формирующуюся свечу — иначе ось времени обрывается
+    try{
+      const lastClose=bars[bars.length-1].close;
+      const nowSec=Math.floor(Date.now()/1000)+MSK;
+      const curBarTime=nowSec-(nowSec%barDur); // начало текущего периода
+      if(curBarTime>bars[bars.length-1].time){
+        bigCandle.update({time:curBarTime,open:lastClose,high:lastClose,low:lastClose,close:lastClose});
+      }
+    }catch{}
     try{rsiChart.timeScale().fitContent()}catch{}
   }catch(e){
     console.error('loadBig:',e.message);
