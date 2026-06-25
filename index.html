@@ -224,7 +224,7 @@ const chartObs=new IntersectionObserver(entries=>{
         r.chart=chart;r.series=series;r.vol=vol||null;
         const bars=candleMap[sym];
         if(bars?.length){
-          const disp=bars.slice(-18);
+          const disp=bars.slice(-12);
           try{series.setData(disp);chart.timeScale().fitContent();}catch{}
           try{if(r.vol)r.vol.setData(disp.map(b=>({time:b.time,value:b.vol||0,color:b.close>=b.open?'rgba(74,222,128,0.25)':'rgba(248,113,113,0.25)'})));}catch{}
         }
@@ -372,7 +372,7 @@ function updateCard(c,r,metricFn){
   r.root.classList.toggle('sel',c.symbol===selSymbol);
   if(metricFn){const{text,color}=metricFn(c);r.metricEl.textContent=text;r.metricEl.style.color=color||'#5c7099'}
   else{r.metricEl.textContent='$'+fV(c.quoteVolume);r.metricEl.style.color='#2a3d60'}
-  if(r.series&&candleMap[c.symbol]?.length)try{r.series.setData((candleMap[c.symbol]||[]).slice(-18));r.chart.timeScale().fitContent()}catch{}
+  if(r.series&&candleMap[c.symbol]?.length)try{r.series.setData((candleMap[c.symbol]||[]).slice(-12));r.chart.timeScale().fitContent()}catch{}
 }
 
 // ── STRIP SCROLL ─────────────────────────────────────────
@@ -656,7 +656,7 @@ async function fetchTfBatch(syms,tf,secId){
       if(!bars?.length)return;
       const r=(refs[secId]||{})[sym];
       if(r?.series&&r.chartInited){
-        try{const disp18=bars.slice(-18);r.series.setData(disp18);r.chart.timeScale().fitContent();
+        try{const disp18=bars.slice(-12);r.series.setData(disp18);r.chart.timeScale().fitContent();
           try{if(r.vol)r.vol.setData(disp18.map(b=>({time:b.time,value:b.vol||0,color:b.close>=b.open?'rgba(74,222,128,0.25)':'rgba(248,113,113,0.25)'})));}catch{}
         }catch(e){}
       }
@@ -883,7 +883,7 @@ function initBig(){
       layout:{background:{color:'#0d1119'},textColor:'#c8d6e8'},
       grid:{vertLines:{color:'#0e1525'},horzLines:{color:'#0e1525'}},
       crosshair:{mode:1},rightPriceScale:{borderColor:'#131a2e'},
-      timeScale:{borderColor:'#131a2e',timeVisible:false,visible:false},
+      timeScale:{borderColor:'#131a2e',timeVisible:true,secondsVisible:false},
       localization:{timeFormatter:(t)=>{const d=new Date(t*1000);return('0'+d.getUTCHours()).slice(-2)+':'+('0'+d.getUTCMinutes()).slice(-2);}},
       handleScroll:true,handleScale:true
     });
@@ -898,7 +898,7 @@ function initBig(){
       grid:{vertLines:{color:'#0e1525'},horzLines:{color:'#0e1525'}},
       crosshair:{mode:1},
       rightPriceScale:{borderColor:'#131a2e',scaleMargins:{top:0.1,bottom:0.1}},
-      timeScale:{borderColor:'#131a2e',timeVisible:true,secondsVisible:false},
+      timeScale:{borderColor:'#131a2e',timeVisible:false,visible:false},
       localization:{timeFormatter:(t)=>{const d=new Date(t*1000);const h=('0'+d.getUTCHours()).slice(-2);const m=('0'+d.getUTCMinutes()).slice(-2);return h+':'+m;}},
       handleScroll:true,handleScale:true
     });
