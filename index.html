@@ -227,7 +227,7 @@ const chartObs=new IntersectionObserver(entries=>{
           const disp=bars.slice(-12);
           try{series.setData(disp);chart.timeScale().fitContent();}catch{}
           try{if(r.vol)r.vol.setData(disp.map(b=>({time:b.time,value:b.vol||0,color:b.close>=b.open?'rgba(74,222,128,0.25)':'rgba(248,113,113,0.25)'})));}catch{}
-          try{chart.timeScale().scrollToPosition(3,false);}catch{} // пространство справа
+          try{chart.timeScale().setVisibleLogicalRange({from:-0.5,to:16.5});}catch{} // 30% справа
         }
         chartObs.unobserve(div);return;
       }
@@ -657,7 +657,11 @@ async function fetchTfBatch(syms,tf,secId){
       if(!bars?.length)return;
       const r=(refs[secId]||{})[sym];
       if(r?.series&&r.chartInited){
-        try{const disp18=bars.slice(-12);r.series.setData(disp18);r.chart.timeScale().fitContent();try{r.chart.timeScale().scrollToPosition(3,false);}catch{}try{r.chart.timeScale().scrollToPosition(3,false)}catch{}
+        try{const disp18=bars.slice(-12);r.series.setData(disp18);
+          try{
+            // 30% пространство справа: 12 баров + ~5 пустых = 17 слотов
+            r.chart.timeScale().setVisibleLogicalRange({from:-0.5,to:16.5});
+          }catch{r.chart.timeScale().fitContent();}try{r.chart.timeScale().scrollToPosition(3,false)}catch{}
           try{if(r.vol)r.vol.setData(disp18.map(b=>({time:b.time,value:b.vol||0,color:b.close>=b.open?'rgba(74,222,128,0.25)':'rgba(248,113,113,0.25)'})));}catch{}
         }catch(e){}
       }
@@ -911,8 +915,8 @@ function initBig(){
     rsiLine.createPriceLine({price:30,color:'#38bdf8',lineWidth:1,lineStyle:2});
     // Sync timescales
     let sync=false;
-    bigChart.timeScale().subscribeVisibleLogicalRangeChange(r=>{if(!sync&&r){sync=true;rsiChart.timeScale().setVisibleLogicalRange(r);sync=false}});
-    rsiChart.timeScale().subscribeVisibleLogicalRangeChange(r=>{if(!sync&&r){sync=true;bigChart.timeScale().setVisibleLogicalRange(r);sync=false}});
+    bigChart.timeScale().subscribeVisibleTimeRangeChange(r=>{if(!sync&&r){sync=true;try{rsiChart.timeScale().setVisibleRange(r)}catch{}sync=false}});
+    rsiChart.timeScale().subscribeVisibleTimeRangeChange(r=>{if(!sync&&r){sync=true;try{bigChart.timeScale().setVisibleRange(r)}catch{}sync=false}});
     // Resize on window size change
     window.addEventListener('resize',()=>{
       const nw=window.innerWidth;
