@@ -917,7 +917,7 @@ const BOPTS={
   crosshair:{mode:1},
   rightPriceScale:{borderColor:'#131a2e'},
   timeScale:{borderColor:'#131a2e',timeVisible:true,secondsVisible:false},
-  handleScroll:true,handleScale:true
+  handleScroll:{mouseWheel:false,pressedMouseMove:true,horzTouchDrag:true},handleScale:{mouseWheel:true,pinch:true,axisPressedMouseMove:{time:true,price:true}}
 };
 function initBig(){
   if(bigInited)return;bigInited=true;
@@ -943,7 +943,7 @@ function initBig(){
         }
       },
       localization:{timeFormatter:(t)=>{const d=new Date(t*1000);return('0'+d.getUTCHours()).slice(-2)+':'+('0'+d.getUTCMinutes()).slice(-2);}},
-      handleScroll:true,handleScale:true
+      handleScroll:{mouseWheel:false,pressedMouseMove:true,horzTouchDrag:true},handleScale:{mouseWheel:true,pinch:true,axisPressedMouseMove:{time:true,price:true}}
     });
     bigCandle=bigChart.addCandlestickSeries({
       upColor:'#4ade80',downColor:'#f87171',
@@ -958,7 +958,7 @@ function initBig(){
       rightPriceScale:{borderColor:'#131a2e',scaleMargins:{top:0.05,bottom:0.05},autoScale:true},
       timeScale:{borderColor:'#131a2e',timeVisible:false,visible:false},
       localization:{timeFormatter:(t)=>{const d=new Date(t*1000);const h=('0'+d.getUTCHours()).slice(-2);const m=('0'+d.getUTCMinutes()).slice(-2);return h+':'+m;}},
-      handleScroll:true,handleScale:true
+      handleScroll:{mouseWheel:false,pressedMouseMove:true,horzTouchDrag:true},handleScale:{mouseWheel:true,pinch:true,axisPressedMouseMove:{time:true,price:true}}
     });
     rsiLine=rsiChart.addLineSeries({color:'#a3e635',lineWidth:1,priceLineVisible:false,lastValueVisible:true,priceLineVisible:false,lastValueVisible:true});
     // RSI watermark label on left side
@@ -1045,10 +1045,7 @@ async function loadBig(sym,tf,isSynth){
         try{bigCandle.update({time:t,open:lastClose,high:lastClose,low:lastClose,close:lastClose})}catch{}
         t+=barDur;
       }
-      // Добавляем 6 будущих баров — ось времени продолжается в будущее
-      for(let gi=1;gi<=6;gi++){
-        try{bigCandle.update({time:curBarTime+barDur*gi,open:lastClose,high:lastClose,low:lastClose,close:lastClose});}catch{}
-      }
+      // НЕ добавляем видимые будущие свечи — ось продолжается через setVisibleRange
       // Устанавливаем видимый диапазон с будущим пространством справа
       const fromTime=Math.max(bars[0].time, curBarTime-barDur*44);
       const toTime=curBarTime+barDur*6; // 6 баров будущего пространства
