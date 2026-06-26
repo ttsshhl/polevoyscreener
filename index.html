@@ -226,11 +226,7 @@ const chartObs=new IntersectionObserver(entries=>{
         const bars=candleMap[sym];
         if(bars?.length){
           const disp=bars.slice(-18);
-          try{
-            series.setData(disp);
-            if(disp.length>1){const _bdO=disp[disp.length-1].time-disp[disp.length-2].time;chart.timeScale().setVisibleRange({from:disp[0].time,to:disp[disp.length-1].time+_bdO*6});}
-            else{chart.timeScale().fitContent();}
-          }catch{}
+          try{series.setData(disp);chart.timeScale().fitContent();}catch{}
           try{if(r.vol)r.vol.setData(disp.map(b=>({time:b.time,value:b.vol||0,color:b.close>=b.open?'rgba(74,222,128,0.25)':'rgba(248,113,113,0.25)'})));}catch{}
           try{
             const dspE=r.series.data?.()??[];
@@ -329,6 +325,7 @@ const MOPTS={
     timeVisible:true,
     secondsVisible:false,
     borderVisible:false,
+    rightOffset:6, // пустое будущее пространство справа
     // Всегда показываем часы (не числа дней)
     tickMarkFormatter:(t,type)=>{
       const d=new Date(t*1000);
@@ -386,7 +383,7 @@ function updateCard(c,r,metricFn){
   r.root.classList.toggle('sel',c.symbol===selSymbol);
   if(metricFn){const{text,color}=metricFn(c);r.metricEl.textContent=text;r.metricEl.style.color=color||'#5c7099'}
   else{r.metricEl.textContent='$'+fV(c.quoteVolume);r.metricEl.style.color='#60a5fa'}
-  if(r.series&&candleMap[c.symbol]?.length)try{r.series.setData((candleMap[c.symbol]||[]).slice(-18));try{if(bars2?.length>1){const _bdR=bars2[bars2.length-1].time-bars2[bars2.length-2].time;r.chart.timeScale().setVisibleRange({from:bars2[0].time,to:bars2[bars2.length-1].time+_bdR*6});}else r.chart.timeScale().fitContent();}catch{};}catch{}
+  if(r.series&&candleMap[c.symbol]?.length)try{r.series.setData((candleMap[c.symbol]||[]).slice(-18));try{r.chart.timeScale().fitContent();}catch{};}catch{}
 }
 
 // ── STRIP SCROLL ─────────────────────────────────────────
@@ -672,7 +669,7 @@ async function fetchTfBatch(syms,tf,secId){
       if(r?.series&&r.chartInited){
         try{const miniN=getMiniCount(sectionTf[secId]||'1h');const disp18=bars.slice(-miniN);
           r.series.setData(disp18);
-          try{if(bars2?.length>1){const _bdR=bars2[bars2.length-1].time-bars2[bars2.length-2].time;r.chart.timeScale().setVisibleRange({from:bars2[0].time,to:bars2[bars2.length-1].time+_bdR*6});}else r.chart.timeScale().fitContent();}catch{}
+          try{r.chart.timeScale().fitContent();}catch{}
           
           try{if(r.vol)r.vol.setData(disp18.map(b=>({time:b.time,value:b.vol||0,color:b.close>=b.open?'rgba(74,222,128,0.25)':'rgba(248,113,113,0.25)'})));}catch{}
         }catch(e){}
@@ -698,7 +695,7 @@ async function switchSectionTf(secId,tf){
     const bars=getTfBars(sym,tf);
     if(!bars?.length)return;
     const r=ro[sym];
-    if(r?.series&&r.chartInited)try{r.series.setData(bars.slice(-18));try{if(bars2?.length>1){const _bdR=bars2[bars2.length-1].time-bars2[bars2.length-2].time;r.chart.timeScale().setVisibleRange({from:bars2[0].time,to:bars2[bars2.length-1].time+_bdR*6});}else r.chart.timeScale().fitContent();}catch{};}catch{}
+    if(r?.series&&r.chartInited)try{r.series.setData(bars.slice(-18));try{r.chart.timeScale().fitContent();}catch{};}catch{}
   });
   // Fetch what we don't have yet
   const missing=syms.filter(sym=>!getTfBars(sym,tf)?.length);
@@ -1102,7 +1099,7 @@ function pushCandlesToRefs(sym){
       const secId=Object.keys(refs).find(k=>refs[k]===ro);
       const secBars=(secId&&sectionTf[secId]&&sectionTf[secId]!=='1h')
         ?getTfBars(sym,sectionTf[secId])??bars:bars;
-      try{r.series.setData(secBars.slice(-18));try{if(bars2?.length>1){const _bdR=bars2[bars2.length-1].time-bars2[bars2.length-2].time;r.chart.timeScale().setVisibleRange({from:bars2[0].time,to:bars2[bars2.length-1].time+_bdR*6});}else r.chart.timeScale().fitContent();}catch{};}catch{}
+      try{r.series.setData(secBars.slice(-18));try{r.chart.timeScale().fitContent();}catch{};}catch{}
     }else if(!r.chartInited&&r.root){
       const rect=r.root.getBoundingClientRect();
       const sRect=scrollEl?scrollEl.getBoundingClientRect():{top:0,bottom:window.innerHeight};
