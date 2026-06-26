@@ -202,7 +202,7 @@ let keys={grid:null,stocks:null,pd:null,liq:null,oi:null,rsi:null};
 let useProxy=!IS_LOCAL; // на сайте сразу через прокси
 const sectionTf={pd:'1h',liq:'1h',oi:'1h',rsi:'1h',grid:'1h',stocks:'1h'};
 // Количество баров для мини-графика по таймфрейму → ~25px на бар → 4 метки в 200px
-function getMiniCount(tf){return{'1m':10,'5m':8,'15m':6,'1h':6,'4h':6,'1d':7}[tf]||6;}
+function getMiniCount(tf){return{'1m':30,'5m':24,'15m':18,'1h':18,'4h':12,'1d':9}[tf]||18;}
 const tfCache={}; // tfCache[sym][tf]=bars
 const TF_INTERVAL={'1m':'1m','5m':'5m','15m':'15m','1h':'60m','4h':'4h','1d':'1d'};
 function getTfBars(sym,tf){return tf==='1h'?candleMap[sym]:tfCache[sym]?.[tf];}
@@ -226,11 +226,7 @@ const chartObs=new IntersectionObserver(entries=>{
         const bars=candleMap[sym];
         if(bars?.length){
           const disp=bars.slice(-6);
-          try{
-            series.setData(disp);
-            const bdB=disp.length>1?disp[disp.length-1].time-disp[disp.length-2].time:3600;
-            chart.timeScale().setVisibleRange({from:disp[0].time,to:disp[disp.length-1].time+bdB*(Math.ceil(disp.length*0.43)+1)});
-          }catch{chart.timeScale().fitContent();}
+          try{series.setData(disp);chart.timeScale().fitContent();}catch{}
           try{if(r.vol)r.vol.setData(disp.map(b=>({time:b.time,value:b.vol||0,color:b.close>=b.open?'rgba(74,222,128,0.25)':'rgba(248,113,113,0.25)'})));}catch{}
           try{
             const dspE=r.series.data?.()??[];
@@ -329,6 +325,7 @@ const MOPTS={
     timeVisible:true,
     secondsVisible:false,
     borderVisible:false,
+    rightOffset:5, // 5 пустых баров справа = ~30% будущего пространства
     // Всегда показываем часы (не числа дней)
     tickMarkFormatter:(t,type)=>{
       const d=new Date(t*1000);
@@ -386,7 +383,7 @@ function updateCard(c,r,metricFn){
   r.root.classList.toggle('sel',c.symbol===selSymbol);
   if(metricFn){const{text,color}=metricFn(c);r.metricEl.textContent=text;r.metricEl.style.color=color||'#5c7099'}
   else{r.metricEl.textContent='$'+fV(c.quoteVolume);r.metricEl.style.color='#60a5fa'}
-  if(r.series&&candleMap[c.symbol]?.length)try{r.series.setData((candleMap[c.symbol]||[]).slice(-6));try{const bd4=bars2.length>1?bars2[bars2.length-1].time-bars2[bars2.length-2].time:3600;r.chart.timeScale().setVisibleRange({from:bars2[0].time,to:bars2[bars2.length-1].time+bd4*Math.ceil(bars2.length*0.43)});}catch{r.chart.timeScale().fitContent();};}catch{}
+  if(r.series&&candleMap[c.symbol]?.length)try{r.series.setData((candleMap[c.symbol]||[]).slice(-6));try{r.chart.timeScale().fitContent();}catch{};}catch{}
 }
 
 // ── STRIP SCROLL ─────────────────────────────────────────
@@ -672,12 +669,7 @@ async function fetchTfBatch(syms,tf,secId){
       if(r?.series&&r.chartInited){
         try{const miniN=getMiniCount(sectionTf[secId]||'1h');const disp18=bars.slice(-miniN);
           r.series.setData(disp18);
-          try{
-            const bdA=disp18.length>1?disp18[disp18.length-1].time-disp18[disp18.length-2].time:3600;
-            const futA=Math.ceil(disp18.length*0.43);
-            // 30% пространства справа: показываем до lastBar + ~43% баров вперёд
-            r.chart.timeScale().setVisibleRange({from:disp18[0].time,to:disp18[disp18.length-1].time+bdA*(futA+1)});
-          }catch{r.chart.timeScale().fitContent();}
+          try{r.chart.timeScale().fitContent();}catch{}
           try{if(r.vol)r.vol.setData(disp18.map(b=>({time:b.time,value:b.vol||0,color:b.close>=b.open?'rgba(74,222,128,0.25)':'rgba(248,113,113,0.25)'})));}catch{}
         }catch(e){}
       }
@@ -702,7 +694,7 @@ async function switchSectionTf(secId,tf){
     const bars=getTfBars(sym,tf);
     if(!bars?.length)return;
     const r=ro[sym];
-    if(r?.series&&r.chartInited)try{r.series.setData(bars.slice(-6));try{const bd4=bars2.length>1?bars2[bars2.length-1].time-bars2[bars2.length-2].time:3600;r.chart.timeScale().setVisibleRange({from:bars2[0].time,to:bars2[bars2.length-1].time+bd4*Math.ceil(bars2.length*0.43)});}catch{r.chart.timeScale().fitContent();};}catch{}
+    if(r?.series&&r.chartInited)try{r.series.setData(bars.slice(-6));try{r.chart.timeScale().fitContent();}catch{};}catch{}
   });
   // Fetch what we don't have yet
   const missing=syms.filter(sym=>!getTfBars(sym,tf)?.length);
@@ -1106,7 +1098,7 @@ function pushCandlesToRefs(sym){
       const secId=Object.keys(refs).find(k=>refs[k]===ro);
       const secBars=(secId&&sectionTf[secId]&&sectionTf[secId]!=='1h')
         ?getTfBars(sym,sectionTf[secId])??bars:bars;
-      try{r.series.setData(secBars.slice(-6));try{const bd4=bars2.length>1?bars2[bars2.length-1].time-bars2[bars2.length-2].time:3600;r.chart.timeScale().setVisibleRange({from:bars2[0].time,to:bars2[bars2.length-1].time+bd4*Math.ceil(bars2.length*0.43)});}catch{r.chart.timeScale().fitContent();};}catch{}
+      try{r.series.setData(secBars.slice(-6));try{r.chart.timeScale().fitContent();}catch{};}catch{}
     }else if(!r.chartInited&&r.root){
       const rect=r.root.getBoundingClientRect();
       const sRect=scrollEl?scrollEl.getBoundingClientRect():{top:0,bottom:window.innerHeight};
