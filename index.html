@@ -55,7 +55,9 @@ body{background:#0d1119;color:#c8d6e8;font-family:'JetBrains Mono','Fira Code',m
 .strip-empty{color:#7c93b8;font-size:11px;padding:14px 0;white-space:nowrap;align-self:center}
 /* CARD */
 .card{background:#111620;border:1px solid #131a2e;border-radius:5px;cursor:pointer;overflow:hidden;flex-shrink:0;width:200px;transition:background .15s,border-color .15s,box-shadow .15s}
-.card:hover{background:#151e30;border-color:rgba(160,200,240,0.3);box-shadow:0 0 8px rgba(120,170,230,0.12)}.card.sel{border-color:#a3e635;box-shadow:0 0 0 1px #a3e635 inset}
+.card:hover{background:#151e30;border-color:rgba(160,200,240,0.3);box-shadow:0 0 8px rgba(120,170,230,0.12)}
+.card-mini{transition:transform .22s ease;transform-origin:center center}
+.card:hover .card-mini{transform:scale(1.04)}.card.sel{border-color:#a3e635;box-shadow:0 0 0 1px #a3e635 inset}
 .card.synth-card{border-color:#1a1f35}
 .card-top{display:flex;justify-content:space-between;align-items:center;padding:5px 7px 1px}
 .card-sym{font-size:10px;font-weight:700;color:#dde8ff}
@@ -227,10 +229,16 @@ const chartObs=new IntersectionObserver(entries=>{
         const bars=candleMap[sym];
         if(bars?.length){
           const disp=bars.slice(-6);
-          try{series.setData(disp);}catch{}
-          try{chart.timeScale().setVisibleLogicalRange({from:-0.5,to:8.5});}catch{chart.timeScale().fitContent();}
+          try{
+            series.setData(disp);
+            const bdB=disp.length>1?disp[disp.length-1].time-disp[disp.length-2].time:3600;
+            chart.timeScale().setVisibleRange({from:disp[0].time,to:disp[disp.length-1].time+bdB*Math.ceil(disp.length*0.43)});
+          }catch{chart.timeScale().fitContent();}
           try{if(r.vol)r.vol.setData(disp.map(b=>({time:b.time,value:b.vol||0,color:b.close>=b.open?'rgba(74,222,128,0.25)':'rgba(248,113,113,0.25)'})));}catch{}
-          try{chart.timeScale().setVisibleLogicalRange({from:-0.5,to:8.5});}catch{} // 30% справа
+          try{
+            const dspE=r.series.data?.()??[];
+            if(dspE.length>1){const bdE=dspE[dspE.length-1].time-dspE[dspE.length-2].time;chart.timeScale().setVisibleRange({from:dspE[0].time,to:dspE[dspE.length-1].time+bdE*Math.ceil(dspE.length*0.43)});}
+          }catch{}
         }
         chartObs.unobserve(div);return;
       }
@@ -381,7 +389,7 @@ function updateCard(c,r,metricFn){
   r.root.classList.toggle('sel',c.symbol===selSymbol);
   if(metricFn){const{text,color}=metricFn(c);r.metricEl.textContent=text;r.metricEl.style.color=color||'#5c7099'}
   else{r.metricEl.textContent='$'+fV(c.quoteVolume);r.metricEl.style.color='#60a5fa'}
-  if(r.series&&candleMap[c.symbol]?.length)try{r.series.setData((candleMap[c.symbol]||[]).slice(-6));r.chart.timeScale().setVisibleLogicalRange({from:-0.5,to:8.5});}catch{}
+  if(r.series&&candleMap[c.symbol]?.length)try{r.series.setData((candleMap[c.symbol]||[]).slice(-6));try{const bd4=bars2.length>1?bars2[bars2.length-1].time-bars2[bars2.length-2].time:3600;r.chart.timeScale().setVisibleRange({from:bars2[0].time,to:bars2[bars2.length-1].time+bd4*Math.ceil(bars2.length*0.43)});}catch{r.chart.timeScale().fitContent();};}catch{}
 }
 
 // ── STRIP SCROLL ─────────────────────────────────────────
@@ -665,11 +673,13 @@ async function fetchTfBatch(syms,tf,secId){
       if(!bars?.length)return;
       const r=(refs[secId]||{})[sym];
       if(r?.series&&r.chartInited){
-        try{const miniN=getMiniCount(sectionTf[secId]||'1h');const disp18=bars.slice(-miniN);r.series.setData(disp18);
+        try{const miniN=getMiniCount(sectionTf[secId]||'1h');const disp18=bars.slice(-miniN);
+          r.series.setData(disp18);
           try{
-            // 30% пространство справа: 12 баров + ~5 пустых = 17 слотов
-            r.chart.timeScale().setVisibleLogicalRange({from:-0.5,to:8.5});
-          }catch{r.chart.timeScale().setVisibleLogicalRange({from:-0.5,to:8.5});}//se)}catch{}
+            const bdA=disp18.length>1?disp18[disp18.length-1].time-disp18[disp18.length-2].time:3600;
+            const futA=Math.ceil(disp18.length*0.43);
+            r.chart.timeScale().setVisibleRange({from:disp18[0].time,to:disp18[disp18.length-1].time+bdA*futA});
+          }catch{r.chart.timeScale().fitContent();}
           try{if(r.vol)r.vol.setData(disp18.map(b=>({time:b.time,value:b.vol||0,color:b.close>=b.open?'rgba(74,222,128,0.25)':'rgba(248,113,113,0.25)'})));}catch{}
         }catch(e){}
       }
@@ -694,7 +704,7 @@ async function switchSectionTf(secId,tf){
     const bars=getTfBars(sym,tf);
     if(!bars?.length)return;
     const r=ro[sym];
-    if(r?.series&&r.chartInited)try{r.series.setData(bars.slice(-6));r.chart.timeScale().setVisibleLogicalRange({from:-0.5,to:8.5});}catch{}
+    if(r?.series&&r.chartInited)try{r.series.setData(bars.slice(-6));try{const bd4=bars2.length>1?bars2[bars2.length-1].time-bars2[bars2.length-2].time:3600;r.chart.timeScale().setVisibleRange({from:bars2[0].time,to:bars2[bars2.length-1].time+bd4*Math.ceil(bars2.length*0.43)});}catch{r.chart.timeScale().fitContent();};}catch{}
   });
   // Fetch what we don't have yet
   const missing=syms.filter(sym=>!getTfBars(sym,tf)?.length);
@@ -1098,7 +1108,7 @@ function pushCandlesToRefs(sym){
       const secId=Object.keys(refs).find(k=>refs[k]===ro);
       const secBars=(secId&&sectionTf[secId]&&sectionTf[secId]!=='1h')
         ?getTfBars(sym,sectionTf[secId])??bars:bars;
-      try{r.series.setData(secBars.slice(-6));r.chart.timeScale().setVisibleLogicalRange({from:-0.5,to:8.5});}catch{}
+      try{r.series.setData(secBars.slice(-6));try{const bd4=bars2.length>1?bars2[bars2.length-1].time-bars2[bars2.length-2].time:3600;r.chart.timeScale().setVisibleRange({from:bars2[0].time,to:bars2[bars2.length-1].time+bd4*Math.ceil(bars2.length*0.43)});}catch{r.chart.timeScale().fitContent();};}catch{}
     }else if(!r.chartInited&&r.root){
       const rect=r.root.getBoundingClientRect();
       const sRect=scrollEl?scrollEl.getBoundingClientRect():{top:0,bottom:window.innerHeight};
