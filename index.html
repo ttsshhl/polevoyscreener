@@ -54,7 +54,7 @@ body{background:#0d1119;color:#c8d6e8;font-family:'JetBrains Mono','Fira Code',m
 .strip::-webkit-scrollbar-thumb:hover{background:#3d5080}
 .strip-empty{color:#7c93b8;font-size:11px;padding:14px 0;white-space:nowrap;align-self:center}
 /* CARD */
-.card{background:#111620;border:1px solid #1e3252;border-radius:5px;cursor:pointer;overflow:hidden;flex-shrink:0;width:200px;transition:background .15s,border-color .15s,box-shadow .22s ease;position:relative;}.card:hover{background:#152030;border-color:rgba(140,185,255,0.5);box-shadow:0 0 0 1px rgba(120,170,220,0.3),0 4px 18px rgba(60,110,200,0.2)}.card.sel{border-color:#a3e635;box-shadow:0 0 0 1px #a3e635 inset}
+.card{background:#111620;border:1px solid #1e3252;border-radius:5px;cursor:pointer;overflow:hidden;flex-shrink:0;width:280px;transition:background .15s,border-color .15s,box-shadow .22s ease;position:relative;}.card:hover{background:#152030;border-color:rgba(140,185,255,0.5);box-shadow:0 0 0 1px rgba(120,170,220,0.3),0 4px 18px rgba(60,110,200,0.2)}.card.sel{border-color:#a3e635;box-shadow:0 0 0 1px #a3e635 inset}
 .card.synth-card{border-color:#1a1f35}
 .card-top{display:flex;justify-content:space-between;align-items:center;padding:5px 7px 1px}
 .card-sym{font-size:10px;font-weight:700;color:#dde8ff}
@@ -185,7 +185,7 @@ const SYNTH_KEYS=['GOLD','SILVER','XAU','XAG','NQ100','SP500','NASDAQ','DJI',
   'TSLA','AAPL','AMZN','MSFT','NVDA','GOOGL','META','NFLX','AMD','COIN','MSTR','BABA'];
 const OI_LS_KEY='polevoy_oi_v2';
 const THR_PD=3, THR_OI=5, THR_RSI_EX=72, THR_RSI_MV=15;
-const CARD_W=200, CARD_H=76; // +18px для временной оси
+const CARD_W=280, CARD_H=76; // +18px для временной оси
 const MSK = 3 * 3600; // Moscow = UTC+3 (no DST since 2014)
 function toMsk(s){ return s + MSK; }
 function mskHourBoundary(){ return Math.floor((Math.floor(Date.now()/1000)+MSK)/3600)*3600; }
@@ -202,7 +202,7 @@ let keys={grid:null,stocks:null,pd:null,liq:null,oi:null,rsi:null};
 let useProxy=!IS_LOCAL; // на сайте сразу через прокси
 const sectionTf={pd:'1h',liq:'1h',oi:'1h',rsi:'1h',grid:'1h',stocks:'1h'};
 // Количество баров для мини-графика по таймфрейму → ~25px на бар → 4 метки в 200px
-function getMiniCount(tf){return{'1m':30,'5m':24,'15m':18,'1h':18,'4h':12,'1d':9}[tf]||18;}
+function getMiniCount(tf){return{'1m':40,'5m':32,'15m':24,'1h':24,'4h':14,'1d':10}[tf]||24;}
 const tfCache={}; // tfCache[sym][tf]=bars
 const TF_INTERVAL={'1m':'1m','5m':'5m','15m':'15m','1h':'60m','4h':'4h','1d':'1d'};
 function getTfBars(sym,tf){return tf==='1h'?candleMap[sym]:tfCache[sym]?.[tf];}
@@ -225,10 +225,10 @@ const chartObs=new IntersectionObserver(entries=>{
         r.chart=chart;r.series=series;r.vol=vol||null;
         const bars=candleMap[sym];
         if(bars?.length){
-          const disp=bars.slice(-18);
+          const disp=bars.slice(-24);
           try{
             series.setData(disp);
-            if(disp.length>1){const _lb2=disp[disp.length-1];const _bd2=_lb2.time-disp[disp.length-2].time;for(let _i=1;_i<=6;_i++){try{series.update({time:_lb2.time+_bd2*_i,open:_lb2.close,high:_lb2.close,low:_lb2.close,close:_lb2.close});}catch{}}}
+            
             chart.timeScale().fitContent();
           }catch{}
           try{if(r.vol)r.vol.setData(disp.map(b=>({time:b.time,value:b.vol||0,color:b.close>=b.open?'rgba(74,222,128,0.25)':'rgba(248,113,113,0.25)'})));}catch{}
@@ -376,7 +376,7 @@ function updateCard(c,r,metricFn){
   r.root.classList.toggle('sel',c.symbol===selSymbol);
   if(metricFn){const{text,color}=metricFn(c);r.metricEl.textContent=text;r.metricEl.style.color=color||'#5c7099'}
   else{r.metricEl.textContent='$'+fV(c.quoteVolume);r.metricEl.style.color='#60a5fa'}
-  if(r.series&&candleMap[c.symbol]?.length)try{r.series.setData((candleMap[c.symbol]||[]).slice(-18));try{r.chart.timeScale().fitContent();}catch{};}catch{}
+  if(r.series&&candleMap[c.symbol]?.length)try{r.series.setData((candleMap[c.symbol]||[]).slice(-24));try{r.chart.timeScale().fitContent();}catch{};}catch{}
 }
 
 // ── STRIP SCROLL ─────────────────────────────────────────
@@ -662,12 +662,7 @@ async function fetchTfBatch(syms,tf,secId){
       if(r?.series&&r.chartInited){
         try{const miniN=getMiniCount(sectionTf[secId]||'1h');const disp18=bars.slice(-miniN);
           r.series.setData(disp18);
-          // Добавляем 6 призрачных баров в будущем для отображения временной оси
-          if(disp18.length>1){
-            const _lb=disp18[disp18.length-1];
-            const _bd=_lb.time-disp18[disp18.length-2].time;
-            for(let _i=1;_i<=6;_i++){try{r.series.update({time:_lb.time+_bd*_i,open:_lb.close,high:_lb.close,low:_lb.close,close:_lb.close});}catch{}}
-          }
+
           try{r.chart.timeScale().fitContent();}catch{}
           
           try{if(r.vol)r.vol.setData(disp18.map(b=>({time:b.time,value:b.vol||0,color:b.close>=b.open?'rgba(74,222,128,0.25)':'rgba(248,113,113,0.25)'})));}catch{}
@@ -694,7 +689,7 @@ async function switchSectionTf(secId,tf){
     const bars=getTfBars(sym,tf);
     if(!bars?.length)return;
     const r=ro[sym];
-    if(r?.series&&r.chartInited)try{r.series.setData(bars.slice(-18));try{r.chart.timeScale().fitContent();}catch{};}catch{}
+    if(r?.series&&r.chartInited)try{r.series.setData(bars.slice(-24));try{r.chart.timeScale().fitContent();}catch{};}catch{}
   });
   // Fetch what we don't have yet
   const missing=syms.filter(sym=>!getTfBars(sym,tf)?.length);
@@ -1098,7 +1093,7 @@ function pushCandlesToRefs(sym){
       const secId=Object.keys(refs).find(k=>refs[k]===ro);
       const secBars=(secId&&sectionTf[secId]&&sectionTf[secId]!=='1h')
         ?getTfBars(sym,sectionTf[secId])??bars:bars;
-      try{r.series.setData(secBars.slice(-18));try{r.chart.timeScale().fitContent();}catch{};}catch{}
+      try{r.series.setData(secBars.slice(-24));try{r.chart.timeScale().fitContent();}catch{};}catch{}
     }else if(!r.chartInited&&r.root){
       const rect=r.root.getBoundingClientRect();
       const sRect=scrollEl?scrollEl.getBoundingClientRect():{top:0,bottom:window.innerHeight};
