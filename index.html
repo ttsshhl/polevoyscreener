@@ -374,7 +374,7 @@ function updateCard(c,r,metricFn){
   r.root.classList.toggle('sel',c.symbol===selSymbol);
   if(metricFn){const{text,color}=metricFn(c);r.metricEl.textContent=text;r.metricEl.style.color=color||'#5c7099'}
   else{r.metricEl.textContent='$'+fV(c.quoteVolume);r.metricEl.style.color='#2a3d60'}
-  if(r.series&&candleMap[c.symbol]?.length)try{r.series.setData((candleMap[c.symbol]||[]).slice(-12));r.chart.timeScale().fitContent()}catch{}
+  if(r.series&&candleMap[c.symbol]?.length)try{r.series.setData((candleMap[c.symbol]||[]).slice(-12));r.chart.timeScale().setVisibleLogicalRange({from:-0.5,to:16.5});}catch{}
 }
 
 // ── STRIP SCROLL ─────────────────────────────────────────
@@ -662,7 +662,7 @@ async function fetchTfBatch(syms,tf,secId){
           try{
             // 30% пространство справа: 12 баров + ~5 пустых = 17 слотов
             r.chart.timeScale().setVisibleLogicalRange({from:-0.5,to:16.5});
-          }catch{r.chart.timeScale().fitContent();}try{r.chart.timeScale().scrollToPosition(3,false)}catch{}
+          }catch{r.chart.timeScale().setVisibleLogicalRange({from:-0.5,to:16.5});}//se)}catch{}
           try{if(r.vol)r.vol.setData(disp18.map(b=>({time:b.time,value:b.vol||0,color:b.close>=b.open?'rgba(74,222,128,0.25)':'rgba(248,113,113,0.25)'})));}catch{}
         }catch(e){}
       }
@@ -687,7 +687,7 @@ async function switchSectionTf(secId,tf){
     const bars=getTfBars(sym,tf);
     if(!bars?.length)return;
     const r=ro[sym];
-    if(r?.series&&r.chartInited)try{r.series.setData(bars);r.chart.timeScale().fitContent()}catch{}
+    if(r?.series&&r.chartInited)try{r.series.setData(bars.slice(-12));r.chart.timeScale().setVisibleLogicalRange({from:-0.5,to:16.5});}catch{}
   });
   // Fetch what we don't have yet
   const missing=syms.filter(sym=>!getTfBars(sym,tf)?.length);
@@ -916,8 +916,12 @@ function initBig(){
     rsiLine.createPriceLine({price:30,color:'#38bdf8',lineWidth:1,lineStyle:2});
     // Sync timescales
     let sync=false;
-    bigChart.timeScale().subscribeVisibleTimeRangeChange(r=>{if(!sync&&r){sync=true;try{rsiChart.timeScale().setVisibleRange(r)}catch{}sync=false}});
-    rsiChart.timeScale().subscribeVisibleTimeRangeChange(r=>{if(!sync&&r){sync=true;try{bigChart.timeScale().setVisibleRange(r)}catch{}sync=false}});
+    bigChart.timeScale().subscribeVisibleLogicalRangeChange(r=>{
+      if(!sync&&r!=null){sync=true;const tr=bigChart.timeScale().getVisibleRange();if(tr)try{rsiChart.timeScale().setVisibleRange(tr)}catch{}sync=false;}
+    });
+    rsiChart.timeScale().subscribeVisibleLogicalRangeChange(r=>{
+      if(!sync&&r!=null){sync=true;const tr=rsiChart.timeScale().getVisibleRange();if(tr)try{bigChart.timeScale().setVisibleRange(tr)}catch{}sync=false;}
+    });
     // Resize on window size change
     window.addEventListener('resize',()=>{
       const nw=window.innerWidth;
@@ -1084,7 +1088,7 @@ function pushCandlesToRefs(sym){
       const secId=Object.keys(refs).find(k=>refs[k]===ro);
       const secBars=(secId&&sectionTf[secId]&&sectionTf[secId]!=='1h')
         ?getTfBars(sym,sectionTf[secId])??bars:bars;
-      try{r.series.setData(secBars);r.chart.timeScale().fitContent()}catch{}
+      try{r.series.setData(secBars.slice(-12));r.chart.timeScale().setVisibleLogicalRange({from:-0.5,to:16.5});}catch{}
     }else if(!r.chartInited&&r.root){
       const rect=r.root.getBoundingClientRect();
       const sRect=scrollEl?scrollEl.getBoundingClientRect():{top:0,bottom:window.innerHeight};
