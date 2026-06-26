@@ -330,18 +330,7 @@ const MOPTS={
     secondsVisible:false,
     borderVisible:false,
     rightOffset:6, // пустое будущее пространство справа
-    // Всегда показываем часы (не числа дней)
-    tickMarkFormatter:(t,type)=>{
-      const d=new Date(t*1000);
-      // type 0=Year,1=Month,2=DayOfMonth,3=Time,4=TimeWithSeconds
-      if(type<=2){
-        // Дневной таймфрейм — показываем дату ДД.ММ
-        return('0'+d.getUTCDate()).slice(-2)+'.'+('0'+(d.getUTCMonth()+1)).slice(-2);
-      }
-      const h=('0'+d.getUTCHours()).slice(-2);
-      const m=d.getUTCMinutes();
-      return m===0?h+':00':h+':'+('0'+m).slice(-2);
-    }
+    // LightweightCharts default formatter: "27" для смены дня, "HH:MM" для времени
   },
   crosshair:{vertLine:{visible:false,labelVisible:false},horzLine:{visible:false,labelVisible:false}},
   handleScroll:false,
