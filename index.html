@@ -1045,6 +1045,10 @@ async function loadBig(sym,tf,isSynth){
         try{bigCandle.update({time:t,open:lastClose,high:lastClose,low:lastClose,close:lastClose})}catch{}
         t+=barDur;
       }
+      // Добавляем 6 будущих баров — ось времени продолжается в будущее
+      for(let gi=1;gi<=6;gi++){
+        try{bigCandle.update({time:curBarTime+barDur*gi,open:lastClose,high:lastClose,low:lastClose,close:lastClose});}catch{}
+      }
       // Устанавливаем видимый диапазон с будущим пространством справа
       const fromTime=Math.max(bars[0].time, curBarTime-barDur*44);
       const toTime=curBarTime+barDur*6; // 6 баров будущего пространства
