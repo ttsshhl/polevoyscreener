@@ -60,7 +60,7 @@ body{background:#0d1119;color:#c8d6e8;font-family:'JetBrains Mono','Fira Code',m
 .card-sym{font-size:10px;font-weight:700;color:#dde8ff}
 .card-chg{font-size:10px;font-weight:700}
 .card-mini{height:58px;width:100%;display:block}
-.card-taxis{position:relative;height:18px;border-top:1px solid #2a3f5f;overflow:hidden;flex-shrink:0}
+.card-taxis{position:relative;height:18px;border-top:1px solid rgba(180,200,240,0.2);overflow:hidden;flex-shrink:0}
 .card-taxis::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:repeating-linear-gradient(to right,transparent 0,transparent calc(100%/12 - 1px),#2a3f5f calc(100%/12 - 1px),#2a3f5f calc(100%/12));pointer-events:none}
 .card-taxis span{position:absolute;transform:translateX(-50%);font-size:8px;color:#c8d6e8;white-space:nowrap;top:1px;pointer-events:none}
 .card-bot{display:flex;justify-content:space-between;align-items:center;padding:2px 7px 5px;gap:3px;flex-wrap:nowrap}
@@ -709,7 +709,7 @@ function renderTimeAxis(card,bars,rightOff){
   const tickCount=24; // fixed 24 minor ticks across the axis
   for(let i=1;i<tickCount;i++){
     const pct=(i/tickCount)*100;
-    tickHtml+=`<i style="position:absolute;left:${pct.toFixed(1)}%;top:0;width:1px;height:3px;background:#2a3f5f;display:block"></i>`;
+    tickHtml+=`<i style="position:absolute;left:${pct.toFixed(1)}%;top:0;width:1px;height:3px;background:rgba(180,200,240,0.35);display:block"></i>`;
   }
   ax.innerHTML=tickHtml+html;
 }
@@ -932,7 +932,16 @@ function initBig(){
       layout:{background:{color:'#0d1119'},textColor:'#c8d6e8'},
       grid:{vertLines:{color:'#0e1525'},horzLines:{color:'#0e1525'}},
       crosshair:{mode:1},rightPriceScale:{borderColor:'#131a2e'},
-      timeScale:{borderColor:'#131a2e',timeVisible:true,secondsVisible:false},
+      timeScale:{
+        borderColor:'#131a2e',
+        timeVisible:true,
+        secondsVisible:false,
+        // Показываем 00:00 для полуночи вместо числа дня
+        tickMarkFormatter:(t,type)=>{
+          const d=new Date(t*1000);
+          return('0'+d.getUTCHours()).slice(-2)+':'+('0'+d.getUTCMinutes()).slice(-2);
+        }
+      },
       localization:{timeFormatter:(t)=>{const d=new Date(t*1000);return('0'+d.getUTCHours()).slice(-2)+':'+('0'+d.getUTCMinutes()).slice(-2);}},
       handleScroll:true,handleScale:true
     });
@@ -953,7 +962,7 @@ function initBig(){
     });
     rsiLine=rsiChart.addLineSeries({color:'#a3e635',lineWidth:1,priceLineVisible:false,lastValueVisible:true,priceLineVisible:false,lastValueVisible:true});
     // RSI watermark label on left side
-    try{rsiChart.applyOptions({watermark:{visible:true,fontSize:10,horzAlign:'right',vertAlign:'top',color:'rgba(180,200,230,0.7)',text:'RSI (14)'}})}catch{}
+    try{rsiChart.applyOptions({watermark:{visible:true,fontSize:11,horzAlign:'left',vertAlign:'top',color:'rgba(220,230,255,0.9)',text:'RSI'}})}catch{}
     // Simple price lines without axisLabelVisible (not supported in v4.1.1)
     rsiLine.createPriceLine({price:70,color:'#fb923c',lineWidth:1,lineStyle:2});
     rsiLine.createPriceLine({price:30,color:'#38bdf8',lineWidth:1,lineStyle:2});
