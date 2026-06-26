@@ -62,7 +62,7 @@ body{background:#0d1119;color:#c8d6e8;font-family:'JetBrains Mono','Fira Code',m
 .card-chg{font-size:10px;font-weight:700}
 .card-mini{height:76px;width:100%;display:block}
 .card-bot{display:flex;justify-content:space-between;align-items:center;padding:2px 7px 5px;gap:3px;flex-wrap:nowrap}
-.card-metric{font-size:9px;font-weight:700}
+.card-metric{font-size:9px;font-weight:700;color:#c8d6e8}
 .card-badges{display:flex;gap:2px;flex-wrap:wrap;justify-content:flex-end}
 .bd{font-size:7px;padding:1px 4px;border-radius:2px;font-weight:700;white-space:nowrap}
 /* GRID */
@@ -917,10 +917,10 @@ function initBig(){
     // Sync timescales
     let sync=false;
     bigChart.timeScale().subscribeVisibleLogicalRangeChange(r=>{
-      if(!sync&&r!=null){sync=true;const tr=bigChart.timeScale().getVisibleRange();if(tr)try{rsiChart.timeScale().setVisibleRange(tr)}catch{}sync=false;}
+      if(!sync&&r!=null){sync=true;try{rsiChart.timeScale().setVisibleLogicalRange(r)}catch{}sync=false;}
     });
     rsiChart.timeScale().subscribeVisibleLogicalRangeChange(r=>{
-      if(!sync&&r!=null){sync=true;const tr=rsiChart.timeScale().getVisibleRange();if(tr)try{bigChart.timeScale().setVisibleRange(tr)}catch{}sync=false;}
+      if(!sync&&r!=null){sync=true;try{bigChart.timeScale().setVisibleLogicalRange(r)}catch{}sync=false;}
     });
     // Resize on window size change
     window.addEventListener('resize',()=>{
@@ -976,7 +976,10 @@ async function loadBig(sym,tf,isSynth){
     }
     bigCandle.setData(bars);
     const closes=bars.map(b=>b.close),times=bars.map(b=>b.time);
-    rsiLine.setData(calcRsiArr(closes).map((v,i)=>v!=null?{time:times[i],value:+v.toFixed(2)}:null).filter(Boolean));
+    // Паддим RSI до той же длины что bigChart — тогда logical range синхронизируется точно
+    const rsiArr2=calcRsiArr(closes);
+    const firstRsi=rsiArr2.find(v=>v!=null)??50;
+    rsiLine.setData(times.map((t,i)=>({time:t,value:+((rsiArr2[i]??firstRsi).toFixed(2))})));
     // Показываем как на бирже: текущая свеча видна + правый отступ до "сейчас"
     try{
       const lastBar=bars[bars.length-1];
