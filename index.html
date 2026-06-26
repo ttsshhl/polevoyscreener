@@ -62,7 +62,7 @@ body{background:#0d1119;color:#c8d6e8;font-family:'JetBrains Mono','Fira Code',m
 .card-chg{font-size:10px;font-weight:700}
 .card-mini{height:76px;width:100%;display:block}
 .card-bot{display:flex;justify-content:space-between;align-items:center;padding:2px 7px 5px;gap:3px;flex-wrap:nowrap}
-.card-metric{font-size:9px;font-weight:700;color:#c8d6e8}
+.card-metric{font-size:9px;font-weight:700;color:#a78bfa}
 .card-badges{display:flex;gap:2px;flex-wrap:wrap;justify-content:flex-end}
 .bd{font-size:7px;padding:1px 4px;border-radius:2px;font-weight:700;white-space:nowrap}
 /* GRID */
@@ -224,11 +224,11 @@ const chartObs=new IntersectionObserver(entries=>{
         r.chart=chart;r.series=series;r.vol=vol||null;
         const bars=candleMap[sym];
         if(bars?.length){
-          const disp=bars.slice(-12);
+          const disp=bars.slice(-6);
           try{series.setData(disp);}catch{}
-          try{chart.timeScale().setVisibleLogicalRange({from:-0.5,to:16.5});}catch{chart.timeScale().fitContent();}
+          try{chart.timeScale().setVisibleLogicalRange({from:-0.5,to:8.5});}catch{chart.timeScale().fitContent();}
           try{if(r.vol)r.vol.setData(disp.map(b=>({time:b.time,value:b.vol||0,color:b.close>=b.open?'rgba(74,222,128,0.25)':'rgba(248,113,113,0.25)'})));}catch{}
-          try{chart.timeScale().setVisibleLogicalRange({from:-0.5,to:16.5});}catch{} // 30% справа
+          try{chart.timeScale().setVisibleLogicalRange({from:-0.5,to:8.5});}catch{} // 30% справа
         }
         chartObs.unobserve(div);return;
       }
@@ -355,7 +355,7 @@ function buildCard(c,container,refsObj,lazy=true,extraClass=''){
   div.className='card'+(extraClass?' '+extraClass:'');
   div.dataset.sym=c.symbol;
   div.addEventListener('click',()=>selectCoin(c.symbol,c._isSynth));
-  div.innerHTML=`<div class="card-top"><span class="card-sym">${c._displayName||c.symbol.replace('USDT','')}<span style="color:#1e2740;font-weight:400">/${c._isSynth?'F':'U'}</span></span><span class="card-chg"></span></div><div class="card-mini"></div><div class="card-bot"><span class="card-metric"></span><span class="card-badges"></span></div>`;
+  div.innerHTML=`<div class="card-top"><span class="card-sym" data-sym="${c.symbol}" title="Нажмите чтобы скопировать ${c.symbol}" style="cursor:pointer">${c._displayName||c.symbol.replace('USDT','')}<span style="color:#1e2740;font-weight:400">/${c._isSynth?'F':'U'}</span></span><span class="card-chg"></span></div><div class="card-mini"></div><div class="card-bot"><span class="card-metric"></span><span class="card-badges"></span></div>`;
   container.appendChild(div);
   const r={root:div,chgEl:div.querySelector('.card-chg'),metricEl:div.querySelector('.card-metric'),bdEl:div.querySelector('.card-badges'),chart:null,series:null,chartInited:false};
   refsObj[c.symbol]=r;
@@ -374,7 +374,7 @@ function updateCard(c,r,metricFn){
   r.root.classList.toggle('sel',c.symbol===selSymbol);
   if(metricFn){const{text,color}=metricFn(c);r.metricEl.textContent=text;r.metricEl.style.color=color||'#5c7099'}
   else{r.metricEl.textContent='$'+fV(c.quoteVolume);r.metricEl.style.color='#2a3d60'}
-  if(r.series&&candleMap[c.symbol]?.length)try{r.series.setData((candleMap[c.symbol]||[]).slice(-12));r.chart.timeScale().setVisibleLogicalRange({from:-0.5,to:16.5});}catch{}
+  if(r.series&&candleMap[c.symbol]?.length)try{r.series.setData((candleMap[c.symbol]||[]).slice(-6));r.chart.timeScale().setVisibleLogicalRange({from:-0.5,to:8.5});}catch{}
 }
 
 // ── STRIP SCROLL ─────────────────────────────────────────
@@ -658,11 +658,11 @@ async function fetchTfBatch(syms,tf,secId){
       if(!bars?.length)return;
       const r=(refs[secId]||{})[sym];
       if(r?.series&&r.chartInited){
-        try{const disp18=bars.slice(-12);r.series.setData(disp18);
+        try{const disp18=bars.slice(-6);r.series.setData(disp18);
           try{
             // 30% пространство справа: 12 баров + ~5 пустых = 17 слотов
-            r.chart.timeScale().setVisibleLogicalRange({from:-0.5,to:16.5});
-          }catch{r.chart.timeScale().setVisibleLogicalRange({from:-0.5,to:16.5});}//se)}catch{}
+            r.chart.timeScale().setVisibleLogicalRange({from:-0.5,to:8.5});
+          }catch{r.chart.timeScale().setVisibleLogicalRange({from:-0.5,to:8.5});}//se)}catch{}
           try{if(r.vol)r.vol.setData(disp18.map(b=>({time:b.time,value:b.vol||0,color:b.close>=b.open?'rgba(74,222,128,0.25)':'rgba(248,113,113,0.25)'})));}catch{}
         }catch(e){}
       }
@@ -687,7 +687,7 @@ async function switchSectionTf(secId,tf){
     const bars=getTfBars(sym,tf);
     if(!bars?.length)return;
     const r=ro[sym];
-    if(r?.series&&r.chartInited)try{r.series.setData(bars.slice(-12));r.chart.timeScale().setVisibleLogicalRange({from:-0.5,to:16.5});}catch{}
+    if(r?.series&&r.chartInited)try{r.series.setData(bars.slice(-6));r.chart.timeScale().setVisibleLogicalRange({from:-0.5,to:8.5});}catch{}
   });
   // Fetch what we don't have yet
   const missing=syms.filter(sym=>!getTfBars(sym,tf)?.length);
@@ -1091,7 +1091,7 @@ function pushCandlesToRefs(sym){
       const secId=Object.keys(refs).find(k=>refs[k]===ro);
       const secBars=(secId&&sectionTf[secId]&&sectionTf[secId]!=='1h')
         ?getTfBars(sym,sectionTf[secId])??bars:bars;
-      try{r.series.setData(secBars.slice(-12));r.chart.timeScale().setVisibleLogicalRange({from:-0.5,to:16.5});}catch{}
+      try{r.series.setData(secBars.slice(-6));r.chart.timeScale().setVisibleLogicalRange({from:-0.5,to:8.5});}catch{}
     }else if(!r.chartInited&&r.root){
       const rect=r.root.getBoundingClientRect();
       const sRect=scrollEl?scrollEl.getBoundingClientRect():{top:0,bottom:window.innerHeight};
@@ -1170,6 +1170,20 @@ document.getElementById('tfs').addEventListener('click',e=>{
 // ── BOOT ─────────────────────────────────────────────────
 (async()=>{
   // Search input listener
+  // Копирование тикера по клику на название монеты
+  document.addEventListener('click',e=>{
+    const sym=e.target.closest('[data-sym]');
+    if(sym&&!e.target.closest('.card-badges')){
+      const ticker=sym.dataset.sym;
+      if(!ticker)return;
+      e.stopPropagation();
+      navigator.clipboard.writeText(ticker).catch(()=>{});
+      const orig=sym.style.color;
+      sym.style.color='#4ade80';
+      setTimeout(()=>{sym.style.color=orig;},600);
+    }
+  },true); // capture phase — before card opens chart
+
   // Section TF button handler — added here for reliable scope
   document.querySelectorAll('.sec-tfs').forEach(group=>{
     group.querySelectorAll('.stf').forEach(btn=>{
