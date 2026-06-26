@@ -37,7 +37,7 @@ body{background:#0d1119;color:#c8d6e8;font-family:'JetBrains Mono','Fira Code',m
 .stf:hover{color:#c8d6e8;border-color:#4a6080}
 .stf.on{background:#fbbf24;border-color:#fbbf24;color:#000;font-weight:700}
 #bigcharts{display:none;flex-direction:column;height:380px}
-#mc{flex:2;min-height:0;height:270px}#rcdiv{flex:1;min-height:0;height:110px;position:relative;border-top:1px solid #0e1525}#rc{width:100%;height:100%}
+#mc{flex:2;min-height:0;height:265px}#rcdiv{flex:1;min-height:0;height:115px;position:relative;border-top:1px solid #0e1525}#rc{width:100%;height:100%}
 
 /* SECTIONS */
 .sect{padding:8px 16px 2px}
@@ -227,6 +227,7 @@ const chartObs=new IntersectionObserver(entries=>{
           const disp=bars.slice(-12);
           try{series.setData(disp);chart.timeScale().fitContent();}catch{}
           try{if(r.vol)r.vol.setData(disp.map(b=>({time:b.time,value:b.vol||0,color:b.close>=b.open?'rgba(74,222,128,0.25)':'rgba(248,113,113,0.25)'})));}catch{}
+          try{chart.timeScale().scrollToPosition(3,false);}catch{} // пространство справа
         }
         chartObs.unobserve(div);return;
       }
@@ -656,7 +657,7 @@ async function fetchTfBatch(syms,tf,secId){
       if(!bars?.length)return;
       const r=(refs[secId]||{})[sym];
       if(r?.series&&r.chartInited){
-        try{const disp18=bars.slice(-12);r.series.setData(disp18);r.chart.timeScale().fitContent();
+        try{const disp18=bars.slice(-12);r.series.setData(disp18);r.chart.timeScale().fitContent();try{r.chart.timeScale().scrollToPosition(3,false);}catch{}try{r.chart.timeScale().scrollToPosition(3,false)}catch{}
           try{if(r.vol)r.vol.setData(disp18.map(b=>({time:b.time,value:b.vol||0,color:b.close>=b.open?'rgba(74,222,128,0.25)':'rgba(248,113,113,0.25)'})));}catch{}
         }catch(e){}
       }
@@ -879,7 +880,7 @@ function initBig(){
   const W=Math.max(window.innerWidth||1200,800);
   try{
     bigChart=LightweightCharts.createChart(mc,{
-      width:W,height:270,
+      width:W,height:265,
       layout:{background:{color:'#0d1119'},textColor:'#c8d6e8'},
       grid:{vertLines:{color:'#0e1525'},horzLines:{color:'#0e1525'}},
       crosshair:{mode:1},rightPriceScale:{borderColor:'#131a2e'},
@@ -904,7 +905,7 @@ function initBig(){
     });
     rsiLine=rsiChart.addLineSeries({color:'#a3e635',lineWidth:1,priceLineVisible:false,lastValueVisible:true});
     // RSI watermark label on left side
-    try{rsiChart.applyOptions({watermark:{visible:true,fontSize:11,horzAlign:'left',vertAlign:'top',color:'rgba(220,235,255,0.9)',text:'RSI (14)'}})}catch{}
+    try{rsiChart.applyOptions({watermark:{visible:true,fontSize:10,horzAlign:'right',vertAlign:'top',color:'rgba(180,200,230,0.7)',text:'RSI (14)'}})}catch{}
     // Simple price lines without axisLabelVisible (not supported in v4.1.1)
     rsiLine.createPriceLine({price:70,color:'#fb923c',lineWidth:1,lineStyle:2});
     rsiLine.createPriceLine({price:30,color:'#38bdf8',lineWidth:1,lineStyle:2});
@@ -968,23 +969,27 @@ async function loadBig(sym,tf,isSynth){
     const closes=bars.map(b=>b.close),times=bars.map(b=>b.time);
     rsiLine.setData(calcRsiArr(closes).map((v,i)=>v!=null?{time:times[i],value:+v.toFixed(2)}:null).filter(Boolean));
     // Показываем как на бирже: текущая свеча видна + правый отступ до "сейчас"
-    // Сначала добавляем текущую формирующуюся свечу чтобы ось шла до сейчас
     try{
       const lastBar=bars[bars.length-1];
       const barDur=bars.length>1?bars[bars.length-1].time-bars[bars.length-2].time:3600;
       const nowSec=Math.floor(Date.now()/1000)+MSK;
       const curBarTime=nowSec-(nowSec%barDur);
-      // Заполняем пробел между последней загруженной свечой и текущим временем
+      // Заполняем пробел до текущего момента
       let t=lastBar.time+barDur;
       const lastClose=lastBar.close;
       while(t<=curBarTime){
         try{bigCandle.update({time:t,open:lastClose,high:lastClose,low:lastClose,close:lastClose})}catch{}
         t+=barDur;
       }
-    }catch{}
-    // fitContent показывает все данные включая текущую свечу — ось полная
-    try{bigChart.timeScale().fitContent();}catch{}
-    try{rsiChart.timeScale().fitContent();}catch{}
+      // Устанавливаем видимый диапазон с будущим пространством справа
+      const fromTime=Math.max(bars[0].time, curBarTime-barDur*44);
+      const toTime=curBarTime+barDur*6; // 6 баров будущего пространства
+      bigChart.timeScale().setVisibleRange({from:fromTime,to:toTime});
+      rsiChart.timeScale().setVisibleRange({from:fromTime,to:toTime});
+    }catch{
+      try{bigChart.timeScale().fitContent();}catch{}
+      try{rsiChart.timeScale().fitContent();}catch{}
+    }
     try{rsiChart.timeScale().fitContent()}catch{}
   }catch(e){
     console.error('loadBig:',e.message);
