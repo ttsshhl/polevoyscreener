@@ -862,6 +862,7 @@ async function fetchOI(){
   coins.forEach(co=>delete oiMap[co.symbol]);
 
   let found=0;
+  let candidates=[]; // объявляем ДО if чтобы не было ReferenceError
   Object.keys(snap.data).forEach(sym=>{
     if(!coins.find(co=>co.symbol===sym))return;
     const ov=base.data[sym]||0;
@@ -869,22 +870,18 @@ async function fetchOI(){
     if(!ov||!cv)return;
     const pct=+((cv-ov)/ov*100).toFixed(1);
     if(Math.abs(pct)>=thr){oiMap[sym]=pct;found++;}
+    candidates.push({sym,pct:Math.abs(pct)}); // собираем все для фолбэка
   });
 
-  // Если никто не достиг порога — показываем топ-10 ближайших к 10%
+  // Если никто не достиг порога — показываем топ-10 по изменению
   if(found===0){
-    const candidates=[];
-    Object.keys(snap.data).forEach(sym=>{
-      if(!coins.find(co=>co.symbol===sym))return;
-      const ov=base.data[sym]||0,cv=snap.data[sym]||0;
-      if(!ov||!cv)return;
-      const pct=+((cv-ov)/ov*100).toFixed(1);
-      if(pct!==0)candidates.push({sym,pct});
+    candidates.sort((a,b)=>b.pct-a.pct);
+    candidates.slice(0,10).forEach(({sym})=>{
+      const pct=+((snap.data[sym]-(base.data[sym]||snap.data[sym]))/(base.data[sym]||snap.data[sym])*100).toFixed(1);
+      oiMap[sym]=pct; found++;
     });
-    candidates.sort((a,b)=>Math.abs(b.pct)-Math.abs(a.pct));
-    candidates.slice(0,10).forEach(({sym,pct})=>{oiMap[sym]=pct;found++;});
   }
-  const isTopMode=found>0&&!candidates||found>0;
+  const isTopMode=found>0;
   const modeNote=Object.values(oiMap).some(v=>Math.abs(v)>=thr)?'':`(топ-${found} мин. изм.)`;
   _oiEmptyMsg=found>0?'':`Нет данных OI от OKX`;
   el.textContent=`OI ✓ ${dtMin}м (${found})`;el.style.color='#4a6080';
