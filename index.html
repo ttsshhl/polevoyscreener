@@ -805,31 +805,46 @@ async function switchSectionTf(secId,tf){
 
 // ── 24H CHANGE — BingX klines через прокси ────────────────────────────────
 async function fetchBingxChg(){
-  // Получаем реальное 24ч изменение из BingX klines (1h, 26 баров)
-  // через Railway прокси чтобы обойти CORS
-  const BATCH=8; // запросов параллельно
-  let updated=0;
+  const BATCH=8;
+  let updated=0, failed=0;
   for(let i=0;i<coins.length;i+=BATCH){
     await Promise.all(coins.slice(i,i+BATCH).map(async co=>{
       try{
         const sym=co.symbol.replace('USDT','-USDT');
         const url=`https://open-api.bingx.com/openApi/swap/v2/quote/klines?symbol=${sym}&interval=1h&limit=26`;
-        const j=await fetchAuto(url); // через прокси!
+        const j=await fetchAuto(url);
+        // BingX может вернуть data как массив массивов или массив объектов
         const bars=Array.isArray(j)?j:Array.isArray(j?.data)?j.data:null;
-        if(!bars||bars.length<2)return;
-        // BingX klines: [time, open, high, low, close, volume, ...]
-        const price24h=parseFloat(bars[0][1]); // open 24ч назад
-        const priceNow=parseFloat(bars[bars.length-1][4]); // close сейчас
-        if(price24h>0&&priceNow>0){
-          const pct=+((priceNow-price24h)/price24h*100).toFixed(2);
-          co.priceChangePercent=pct+'';
-          updated++;
+        if(!bars||bars.length<2){failed++;return;}
+        // Лог для первой монеты чтобы увидеть формат
+        if(i===0&&co===coins[0])console.log('BingX kline bar[0]:',JSON.stringify(bars[0])?.slice(0,150),'bar[-1]:',JSON.stringify(bars[bars.length-1])?.slice(0,150));
+        // Получаем close для СТАРОГО и НОВОГО баров
+        function getClose(bar){
+          if(Array.isArray(bar)){
+            // Формат [time, open, high, low, close, vol] — close на индексе 4
+            // Проверяем: если bar[4] > bar[1] и bar[4] < bar[2] — это close между high/low
+            const c4=parseFloat(bar[4]), c1=parseFloat(bar[1]), c2=parseFloat(bar[2]), c3=parseFloat(bar[3]);
+            // Стандартный формат OHLCV: [t, O, H, L, C, V]
+            return c4; // индекс 4 = close
+          }
+          // Формат объекта
+          return parseFloat(bar.close||bar.c||bar[4]||0);
         }
-      }catch{}
+        // Определяем порядок: старый vs новый по timestamp
+        const t0=parseFloat(Array.isArray(bars[0])?bars[0][0]:bars[0].time||bars[0].t||0);
+        const tN=parseFloat(Array.isArray(bars[bars.length-1])?bars[bars.length-1][0]:bars[bars.length-1].time||bars[bars.length-1].t||0);
+        const [oldBar,newBar]=t0<tN?[bars[0],bars[bars.length-1]]:[bars[bars.length-1],bars[0]];
+        const price24h=getClose(oldBar);
+        const priceNow=getClose(newBar);
+        if(price24h>0&&priceNow>0){
+          co.priceChangePercent=+((priceNow-price24h)/price24h*100).toFixed(2)+'';
+          updated++;
+        }else failed++;
+      }catch(e){failed++;}
     }));
   }
-  if(updated>0){console.log(`BingX 24h klines: ${updated} монет`);renderAll();}
-  else console.warn('BingX klines: 0 монет обновлено');
+  console.log(`BingX klines: обновлено ${updated}, ошибок ${failed}`);
+  if(updated>0)renderAll();
 }
 
 
