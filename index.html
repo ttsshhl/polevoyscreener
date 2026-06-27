@@ -808,39 +808,33 @@ async function fetchBingxChg(){
   try{
     const URL='https://open-api.bingx.com/openApi/swap/v2/quote/ticker';
     let j=null;
-    try{j=await fetchAuto(URL);}catch(e){console.warn('BingX direct:',e.message);}
+    try{j=await fetchAuto(URL);}catch{}
     if(!j) try{const r=await fetch(PROXY+encodeURIComponent(URL));j=await r.json();}catch{}
 
-    // BingX может вернуть data как массив ИЛИ data.ticker
     const arr=Array.isArray(j?.data)?j.data:
                Array.isArray(j?.data?.ticker)?j.data.ticker:null;
-
-    if(!arr?.length){
-      console.warn('BingX ticker empty:',JSON.stringify(j)?.slice(0,300));
-      return;
-    }
-    console.log(`BingX тикер: ${arr.length} пар, пример:`,JSON.stringify(arr[0])?.slice(0,300));
+    if(!arr?.length){console.warn('BingX ticker empty');return;}
 
     let updated=0;
     arr.forEach(t=>{
       const sym=(t.symbol||'').replace(/-USDT$/,'USDT').replace(/-USD$/,'USDT');
       if(!sym)return;
-      // Приоритет 1: абсолютное priceChange + lastPrice
-      const chg=parseFloat(t.priceChange||0);
-      const last=parseFloat(t.lastPrice||0);
-      let pct=0;
-      if(last>0&&chg!==0){const prev=last-chg;if(prev>0)pct=+(chg/prev*100).toFixed(2);}
-      // Приоритет 2: priceChangePercent
-      if(pct===0){
-        const raw=parseFloat(t.priceChangePercent||0);
-        if(raw!==0)pct=Math.abs(raw)<=2?+(raw*100).toFixed(2):+raw.toFixed(2);
+
+      // BingX: поле priceChange = процент изменения (например 1.14 = +1.14%)
+      // Проверено: openPrice=59706.3, lastPrice=60385.2 → (60385.2-59706.3)/59706.3*100 = 1.14%
+      let pct=parseFloat(t.priceChange||0);
+
+      // Фолбэк: вычисляем из lastPrice и openPrice если priceChange=0
+      if(!pct){
+        const last=parseFloat(t.lastPrice||0);
+        const open=parseFloat(t.openPrice||0);
+        if(last>0&&open>0) pct=+((last-open)/open*100).toFixed(2);
       }
       if(!pct||isNaN(pct))return;
       const coin=coins.find(co=>co.symbol===sym);
       if(coin){coin.priceChangePercent=pct.toFixed(2);updated++;}
     });
-    if(updated>0){console.log(`BingX обновил ${updated} монет`);renderAll();}
-    else console.warn('BingX: 0 монет обновлено — проверь поля в консоли');
+    if(updated>0){console.log(`BingX 24h chg: ${updated} монет`);renderAll();}
   }catch(e){console.error('fetchBingxChg:',e);}
 }
 
