@@ -57,7 +57,7 @@ body{background:#0d1119;color:#c8d6e8;font-family:'JetBrains Mono','Fira Code',m
 .strip::-webkit-scrollbar-thumb:hover{background:#3d5080}
 .strip-empty{color:#7c93b8;font-size:11px;padding:14px 0;white-space:nowrap;align-self:center}
 /* CARD */
-.card{background:#111620;border:1px solid #1e3252;border-radius:5px;cursor:pointer;overflow:hidden;flex-shrink:0;width:200px;transition:background .15s,border-color .15s,box-shadow .22s ease,transform .22s ease;position:relative;z-index:0;will-change:transform}.card:hover{background:#152030;border-color:rgba(140,185,255,0.5);box-shadow:0 0 0 1px rgba(120,170,220,0.3),0 4px 18px rgba(60,110,200,0.2);transform:scale(1.02);z-index:10}.card.sel{border-color:#a3e635;box-shadow:0 0 0 1px #a3e635 inset}
+.card{background:#111620;border:1px solid #1e3252;border-radius:5px;cursor:pointer;overflow:hidden;flex-shrink:0;width:200px;transition:background .15s,border-color .15s,box-shadow .22s ease,transform .22s ease;position:relative;z-index:0;will-change:transform;transform-origin:top center}.card:hover{background:#152030;border-color:rgba(140,185,255,0.5);box-shadow:0 0 0 1px rgba(120,170,220,0.3),0 4px 18px rgba(60,110,200,0.2);transform:scale(1.02);z-index:10}.card.sel{border-color:#a3e635;box-shadow:0 0 0 1px #a3e635 inset}
 .card.synth-card{border-color:#1a1f35}
 .card-top{display:flex;justify-content:space-between;align-items:center;padding:5px 7px 1px}
 .card-sym{font-size:10px;font-weight:700;color:#dde8ff}
@@ -640,50 +640,26 @@ function updateBigTimeAxis(){
     const range=bigChart.timeScale().getVisibleRange();
     if(!range)return;
     const {from,to}=range;
-    const mcEl=document.getElementById('mc');
-    const W=mcEl?mcEl.offsetWidth:1400;
+    const W=document.getElementById('mc')?.offsetWidth||1400;
     const span=to-from;
-    // Nice interval
+    // Простая линейная позиция: работает для ЛЮБОГО времени включая будущее
+    const tx=t=>((t-from)/span*W);
+    // Выбираем красивый интервал
     const niceI=[60,120,300,600,900,1800,3600,7200,10800,14400,21600,43200,86400];
     const targetN=Math.max(4,Math.floor(W/100));
     const interval=niceI.find(n=>span/n<=targetN*1.5)||86400;
     const halfI=interval/2;
     const firstTick=Math.ceil(from/interval)*interval;
-
-    // Calibrate px/sec — use the LAST DATA BAR as reference point (closest to future zone)
-    let pxPerSec=null, refCoord=null, refT=bigLastBarTime||from+span*0.7;
-    // Walk back from refT to find a point with valid coordinate
-    const step=span*0.05;
-    for(let rr=refT;rr>=from;rr-=step){
-      const rCoord=bigChart.timeScale().timeToCoordinate(rr);
-      if(rCoord!=null){refCoord=rCoord;refT=rr;break;}
-    }
-    // Also find a second calibration point
-    const t1b=refT-span*0.2;
-    const c1b=bigChart.timeScale().timeToCoordinate(t1b);
-    if(c1b!=null&&refCoord!=null&&refT>t1b){
-      pxPerSec=(refCoord-c1b)/(refT-t1b);
-    }
-    // Helper: get X coordinate for any time (including future by extrapolation)
-    function getX(t){
-      const coord=bigChart.timeScale().timeToCoordinate(t);
-      if(coord!=null)return coord;
-      if(pxPerSec==null||refCoord==null)return null;
-      return refCoord+(t-refT)*pxPerSec;
-    }
-
     let html='',ticks='';
-    // Minor ticks
-    for(let t=Math.ceil(from/halfI)*halfI;t<=to+halfI;t+=halfI){
-      const x=getX(t); if(x==null)continue;
-      const pct=(x/W)*100; if(pct<0||pct>100)continue;
-      const isMajor=(Math.round(t)%interval===0);
-      ticks+=`<i style="left:${pct.toFixed(2)}%;height:${isMajor?5:3}px;top:0"></i>`;
+    // Засечки (малые + большие)
+    for(let t=Math.ceil(from/halfI)*halfI;t<=to;t+=halfI){
+      const pct=(tx(t)/W)*100; if(pct<0||pct>100)continue;
+      const big=Math.round(t)%interval===0;
+      ticks+=`<i style="left:${pct.toFixed(2)}%;height:${big?5:3}px;top:0"></i>`;
     }
-    // Major labels
-    for(let t=firstTick;t<=to+interval;t+=interval){
-      const x=getX(t); if(x==null)continue;
-      const pct=(x/W)*100; if(pct<0||pct>100)continue;
+    // Подписи времени (включая будущее)
+    for(let t=firstTick;t<=to;t+=interval){
+      const pct=(tx(t)/W)*100; if(pct<0||pct>100)continue;
       const d=new Date(t*1000);
       html+=`<span style="left:${pct.toFixed(2)}%">${('0'+d.getUTCHours()).slice(-2)}:${('0'+d.getUTCMinutes()).slice(-2)}</span>`;
     }
