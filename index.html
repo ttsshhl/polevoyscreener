@@ -804,40 +804,41 @@ async function switchSectionTf(secId,tf){
 }
 
 // ── 24H CHANGE — BingX klines через прокси ────────────────────────────────
-// BingX klines возвращает ОБЪЕКТЫ: {open, high, low, close, volume, time}
-// close старого бара = мусор (2304 вместо 59163 для BTC)
-// поэтому: берём open старого бара и close нового бара
 async function fetchBingxChg(){
-  const BATCH=8;
-  let updated=0;
+  const BATCH=8; let updated=0, failed=0;
+  // Тест на первых 3 монетах — выведем лог
+  let logged=false;
   for(let i=0;i<coins.length;i+=BATCH){
     await Promise.all(coins.slice(i,i+BATCH).map(async co=>{
       try{
         const sym=co.symbol.replace('USDT','-USDT');
         const url=`https://open-api.bingx.com/openApi/swap/v2/quote/klines?symbol=${sym}&interval=1h&limit=26`;
-        const j=await fetchAuto(url);
-        const bars=Array.isArray(j)?j:Array.isArray(j?.data)?j.data:null;
-        if(!bars||bars.length<2)return;
-        // Определяем старый и новый бар по timestamp
-        function getTime(b){return parseFloat(b.time||b.openTime||b[0]||0);}
-        function getOpen(b){return parseFloat(b.open||b.o||b[1]||0);}
-        function getClose(b){return parseFloat(b.close||b.c||b[4]||0);}
-        const t0=getTime(bars[0]),tN=getTime(bars[bars.length-1]);
+        const raw=await fetchAuto(url);
+        // Извлекаем массив баров
+        const bars=Array.isArray(raw)?raw:Array.isArray(raw?.data)?raw.data:null;
+        if(!bars||bars.length<2){failed++;return;}
+        // Определяем порядок по timestamp
+        const getT=b=>parseFloat(b?.time||b?.openTime||b?.[0]||0);
+        const t0=getT(bars[0]),tN=getT(bars[bars.length-1]);
         const oldBar=t0<tN?bars[0]:bars[bars.length-1];
         const newBar=t0<tN?bars[bars.length-1]:bars[0];
-        // open старого бара = цена 25ч назад (надёжное поле)
-        // close нового бара = текущая цена (надёжное поле)
-        const price24h=getOpen(oldBar);
-        const priceNow=getClose(newBar);
-        if(price24h>0&&priceNow>0){
-          const pct=+((priceNow-price24h)/price24h*100).toFixed(2);
-          co.priceChangePercent=pct+'';
-          updated++;
+        // open/close из объекта или массива
+        const getV=(b,nameKey,arrIdx)=>parseFloat(b?.[nameKey]??b?.[arrIdx]??0);
+        const price24h=getV(oldBar,'open',1);
+        const priceNow=getV(newBar,'close',4);
+        if(!logged&&i<BATCH){
+          console.log(`[24h] ${co.symbol}: bars=${bars.length}, oldBar=`,JSON.stringify(oldBar)?.slice(0,120),', newBar=',JSON.stringify(newBar)?.slice(0,120));
+          console.log(`[24h] price24h=${price24h}, priceNow=${priceNow}, pct=${price24h>0?((priceNow-price24h)/price24h*100).toFixed(2):'?'}%`);
+          logged=true;
         }
-      }catch{}
+        if(price24h>0&&priceNow>0){
+          co.priceChangePercent=+((priceNow-price24h)/price24h*100).toFixed(2)+'';
+          updated++;
+        }else failed++;
+      }catch(e){failed++;}
     }));
   }
-  console.log(`BingX 24h: ${updated}/${coins.length} монет обновлено`);
+  console.log(`BingX 24h: ok=${updated}, fail=${failed}`);
   if(updated>0)renderAll();
 }
 
