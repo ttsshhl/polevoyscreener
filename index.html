@@ -803,6 +803,30 @@ async function switchSectionTf(secId,tf){
 
 }
 
+// ── BINGX 24H CHANGE (точнее для трейдинга на BingX) ────────────────────────
+async function fetchBingxChg(){
+  try{
+    // Один запрос — все перпетуальные пары BingX
+    const BINGX_TICKER='https://open-api.bingx.com/openApi/swap/v2/quote/ticker';
+    let j=null;
+    try{j=await fetchAuto(BINGX_TICKER);}catch{}
+    if(!j?.data?.length)return;
+    let updated=0;
+    j.data.forEach(t=>{
+      // BingX: "VELVET-USDT" → MEXC: "VELVETUSDT"
+      const sym=(t.symbol||'').replace(/-USDT$/,'USDT').replace(/-USD$/,'USDT');
+      const pct=parseFloat(t.priceChangePercent||0);
+      if(!sym||isNaN(pct))return;
+      const coin=coins.find(co=>co.symbol===sym);
+      if(coin){coin.priceChangePercent=pct.toFixed(2);updated++;}
+    });
+    if(updated>0){
+      console.log(`BingX 24h chg: обновлено ${updated} монет`);
+      renderAll();
+    }
+  }catch(e){console.warn('fetchBingxChg',e.message);}
+}
+
 async function fetchOI(){
   const el=document.getElementById('st-oi');
   el.textContent='OI…';el.style.color='#f59e0b';
@@ -1340,6 +1364,8 @@ document.getElementById('tfs').addEventListener('click',e=>{
     await Promise.all([loadKlines(),loadChg5()]);
     // Дополнительные данные — запускаем фоново, не блокируем загрузку
     fetchOI().catch(()=>{});
+    fetchBingxChg().catch(()=>{}); // подгружаем 24ч изменение с BingX
+    setInterval(fetchBingxChg,300000); // обновлять каждые 5 мин
     fetchLiquidations().catch(()=>{});
     fetchSynthetics().catch(()=>{});
     // Фоновые данные не блокируют скринер — он уже работает
