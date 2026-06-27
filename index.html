@@ -1113,7 +1113,9 @@ async function loadBig(sym,tf,isSynth){
       // НЕ добавляем видимые будущие свечи — ось продолжается через setVisibleRange
       // Устанавливаем видимый диапазон с будущим пространством справа
       const fromTime=Math.max(bars[0].time, curBarTime-barDur*44);
-      const toTime=curBarTime+barDur*6; // 6 баров будущего пространства
+      // 30% пространства справа: toTime = fromTime + dataSpan/0.7
+      const dataSpan=curBarTime-fromTime;
+      const toTime=curBarTime+Math.ceil(dataSpan*0.43); // 30% будущего
       bigChart.timeScale().setVisibleRange({from:fromTime,to:toTime});
       rsiChart.timeScale().setVisibleRange({from:fromTime,to:toTime});
     }catch{
