@@ -208,6 +208,7 @@ let keys={grid:null,stocks:null,pd:null,liq:null,oi:null,rsi:null};
 let useProxy=!IS_LOCAL; // на сайте сразу через прокси
 const sectionTf={pd:'1h',liq:'1h',oi:'1h',rsi:'1h',grid:'1h',stocks:'1h'};
 let bigLastBarTime=0; // время последней реальной свечи основного графика
+let bigFromTime=0,bigToTime=0; // хранимые границы видимого диапазона
 // Количество баров для мини-графика по таймфрейму → ~25px на бар → 4 метки в 200px
 function getMiniCount(tf){return{'1m':30,'5m':24,'15m':18,'1h':18,'4h':12,'1d':9}[tf]||18;}
 const tfCache={}; // tfCache[sym][tf]=bars
@@ -637,9 +638,9 @@ function updateBigTimeAxis(){
   const ax=document.getElementById('big-taxis');
   if(!ax||!bigChart)return;
   try{
-    const range=bigChart.timeScale().getVisibleRange();
-    if(!range)return;
-    const {from,to}=range;
+    // Используем сохранённый диапазон (getVisibleRange может быть неточным)
+    const from=bigFromTime||0,to=bigToTime||0;
+    if(!from||!to)return;
     const W=document.getElementById('mc')?.offsetWidth||1400;
     const span=to-from;
     // Простая линейная позиция: работает для ЛЮБОГО времени включая будущее
@@ -1015,7 +1016,12 @@ function initBig(){
       if(!sync&&r!=null){sync=true;try{bigChart.timeScale().setVisibleLogicalRange(r)}catch{}sync=false;}
     });
     // Update custom time axis on any scroll/zoom
-    bigChart.timeScale().subscribeVisibleLogicalRangeChange(()=>requestAnimationFrame(updateBigTimeAxis));
+    bigChart.timeScale().subscribeVisibleLogicalRangeChange(()=>{
+      // Обновляем сохранённый диапазон при прокрутке/зуме
+      const _vr=bigChart.timeScale().getVisibleRange();
+      if(_vr&&_vr.from&&_vr.to){bigFromTime=_vr.from;bigToTime=_vr.to;}
+      requestAnimationFrame(updateBigTimeAxis);
+    });
     setTimeout(updateBigTimeAxis,200);
     // Resize on window size change
     window.addEventListener('resize',()=>{
@@ -1095,6 +1101,7 @@ async function loadBig(sym,tf,isSynth){
       // 30% пространства справа: toTime = fromTime + dataSpan/0.7
       const dataSpan=curBarTime-fromTime;
       const toTime=curBarTime+Math.ceil(dataSpan*0.43); // 30% будущего
+      bigFromTime=fromTime; bigToTime=toTime; // сохраняем для custom axis
       bigChart.timeScale().setVisibleRange({from:fromTime,to:toTime});
       rsiChart.timeScale().setVisibleRange({from:fromTime,to:toTime});
     }catch{
