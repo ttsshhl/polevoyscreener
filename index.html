@@ -803,23 +803,50 @@ async function switchSectionTf(secId,tf){
 
 }
 
-// ── 24H CHANGE — Binance ticker, один запрос, готовый priceChangePercent ───
+// ── 24H CHANGE ──────────────────────────────────────────────────────────────
 async function fetchBingxChg(){
+  let updated=0;
+
+  // Попытка 1: Binance /ticker/24hr — прямой priceChangePercent
   try{
-    // Binance /ticker/24hr — один запрос, все пары, поле priceChangePercent = точный 24ч %
-    const BINANCE='https://api.binance.com/api/v3/ticker/24hr';
-    const arr=await fetchAuto(BINANCE);
-    if(!Array.isArray(arr)||!arr.length){console.warn('Binance ticker пустой');return;}
-    let updated=0;
-    arr.forEach(t=>{
-      const coin=coins.find(co=>co.symbol===t.symbol);
-      if(!coin)return;
-      const pct=parseFloat(t.priceChangePercent);
-      if(!isNaN(pct)){coin.priceChangePercent=pct.toFixed(2);updated++;}
-    });
-    console.log(`Binance 24h: ${updated} монет обновлено`);
-    if(updated>0)renderAll();
-  }catch(e){console.error('fetchBingxChg:',e.message);}
+    console.log('[24h] Пробуем Binance...');
+    const arr=await fetchAuto('https://api.binance.com/api/v3/ticker/24hr');
+    if(Array.isArray(arr)&&arr.length>0){
+      console.log(`[24h] Binance OK: ${arr.length} пар, пример:`,JSON.stringify(arr.find(t=>t.symbol==='BTCUSDT')||arr[0]));
+      arr.forEach(t=>{
+        const coin=coins.find(co=>co.symbol===t.symbol);
+        if(!coin||t.priceChangePercent==null)return;
+        coin.priceChangePercent=parseFloat(t.priceChangePercent).toFixed(2);
+        updated++;
+      });
+      if(updated>0){console.log(`[24h] Binance: ${updated} монет`);renderAll();return;}
+    } else console.warn('[24h] Binance вернул не массив:',JSON.stringify(arr)?.slice(0,200));
+  }catch(e){console.warn('[24h] Binance ошибка:',e.message);}
+
+  // Попытка 2: MEXC contract riseFallValue (абсолютное изменение цены)
+  try{
+    console.log('[24h] Пробуем MEXC contract...');
+    const j=await tFetchJ(`${MEXCC}/ticker`,8000);
+    const arr=Array.isArray(j?.data)?j.data:null;
+    if(arr?.length){
+      console.log(`[24h] MEXC contract OK: ${arr.length} пар, ПОЛНЫЙ пример:`,JSON.stringify(arr.find(t=>t.symbol==='BTC_USDT')||arr[0]));
+      arr.forEach(t=>{
+        const sym=(t.symbol||'').replace('_','');
+        const coin=coins.find(co=>co.symbol===sym);
+        if(!coin)return;
+        const last=parseFloat(t.lastPrice||0);
+        const val=parseFloat(t.riseFallValue||0); // абсолютное изменение цены за 24ч
+        const rate=parseFloat(t.riseFallRate||0); // процент (decimal)
+        let pct=0;
+        if(val!==0&&last>0) pct=+(val/(last-val)*100).toFixed(2);
+        else if(rate!==0) pct=+(rate*100).toFixed(2);
+        if(pct!==0&&!isNaN(pct)){coin.priceChangePercent=pct+'';updated++;}
+      });
+      if(updated>0){console.log(`[24h] MEXC contract: ${updated} монет`);renderAll();return;}
+    }
+  }catch(e){console.warn('[24h] MEXC contract ошибка:',e.message);}
+
+  console.warn('[24h] Все источники недоступны, используем MEXC spot данные');
 }
 
 
