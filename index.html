@@ -57,7 +57,7 @@ body{background:#0d1119;color:#c8d6e8;font-family:'JetBrains Mono','Fira Code',m
 .strip::-webkit-scrollbar-thumb:hover{background:#3d5080}
 .strip-empty{color:#7c93b8;font-size:11px;padding:14px 0;white-space:nowrap;align-self:center}
 /* CARD */
-.card{background:#111620;border:1px solid #1e3252;border-radius:5px;cursor:pointer;overflow:hidden;flex-shrink:0;width:200px;transition:background .15s,border-color .15s,box-shadow .22s ease;position:relative;}.card:hover{background:#152030;border-color:rgba(140,185,255,0.5);box-shadow:0 0 0 1px rgba(120,170,220,0.3),0 4px 18px rgba(60,110,200,0.2)}.card.sel{border-color:#a3e635;box-shadow:0 0 0 1px #a3e635 inset}
+.card{background:#111620;border:1px solid #1e3252;border-radius:5px;cursor:pointer;overflow:hidden;flex-shrink:0;width:200px;transition:background .15s,border-color .15s,box-shadow .22s ease,transform .22s ease;position:relative;z-index:0;will-change:transform}.card:hover{background:#152030;border-color:rgba(140,185,255,0.5);box-shadow:0 0 0 1px rgba(120,170,220,0.3),0 4px 18px rgba(60,110,200,0.2);transform:scale(1.02);z-index:10}.card.sel{border-color:#a3e635;box-shadow:0 0 0 1px #a3e635 inset}
 .card.synth-card{border-color:#1a1f35}
 .card-top{display:flex;justify-content:space-between;align-items:center;padding:5px 7px 1px}
 .card-sym{font-size:10px;font-weight:700;color:#dde8ff}
@@ -207,6 +207,7 @@ let refs={grid:{},stocks:{},pd:{},liq:{},oi:{},rsi:{}};
 let keys={grid:null,stocks:null,pd:null,liq:null,oi:null,rsi:null};
 let useProxy=!IS_LOCAL; // на сайте сразу через прокси
 const sectionTf={pd:'1h',liq:'1h',oi:'1h',rsi:'1h',grid:'1h',stocks:'1h'};
+let bigLastBarTime=0; // время последней реальной свечи основного графика
 // Количество баров для мини-графика по таймфрейму → ~25px на бар → 4 метки в 200px
 function getMiniCount(tf){return{'1m':30,'5m':24,'15m':18,'1h':18,'4h':12,'1d':9}[tf]||18;}
 const tfCache={}; // tfCache[sym][tf]=bars
@@ -649,25 +650,26 @@ function updateBigTimeAxis(){
     const halfI=interval/2;
     const firstTick=Math.ceil(from/interval)*interval;
 
-    // Calibrate px/sec using two known time coords
-    // Use times we KNOW have data (from and somewhere in between)
-    let pxPerSec=null;
-    const t1=from+span*0.3, t2=from+span*0.6;
-    const c1=bigChart.timeScale().timeToCoordinate(t1);
-    const c2=bigChart.timeScale().timeToCoordinate(t2);
-    if(c1!=null&&c2!=null&&t2>t1){
-      pxPerSec=(c2-c1)/(t2-t1);
+    // Calibrate px/sec — use the LAST DATA BAR as reference point (closest to future zone)
+    let pxPerSec=null, refCoord=null, refT=bigLastBarTime||from+span*0.7;
+    // Walk back from refT to find a point with valid coordinate
+    const step=span*0.05;
+    for(let rr=refT;rr>=from;rr-=step){
+      const rCoord=bigChart.timeScale().timeToCoordinate(rr);
+      if(rCoord!=null){refCoord=rCoord;refT=rr;break;}
     }
-    // Helper: get X coordinate for any time (including future)
+    // Also find a second calibration point
+    const t1b=refT-span*0.2;
+    const c1b=bigChart.timeScale().timeToCoordinate(t1b);
+    if(c1b!=null&&refCoord!=null&&refT>t1b){
+      pxPerSec=(refCoord-c1b)/(refT-t1b);
+    }
+    // Helper: get X coordinate for any time (including future by extrapolation)
     function getX(t){
       const coord=bigChart.timeScale().timeToCoordinate(t);
       if(coord!=null)return coord;
-      // Extrapolate for future times
-      if(pxPerSec==null)return null;
-      const ref=bigChart.timeScale().timeToCoordinate(t2)||bigChart.timeScale().timeToCoordinate(t1);
-      if(ref==null)return null;
-      const refT=bigChart.timeScale().timeToCoordinate(t2)!=null?t2:t1;
-      return ref+(t-refT)*pxPerSec;
+      if(pxPerSec==null||refCoord==null)return null;
+      return refCoord+(t-refT)*pxPerSec;
     }
 
     let html='',ticks='';
@@ -1112,6 +1114,7 @@ async function loadBig(sym,tf,isSynth){
       }
       // НЕ добавляем видимые будущие свечи — ось продолжается через setVisibleRange
       // Устанавливаем видимый диапазон с будущим пространством справа
+      bigLastBarTime=curBarTime; // сохраняем для экстраполяции будущего на оси
       const fromTime=Math.max(bars[0].time, curBarTime-barDur*44);
       // 30% пространства справа: toTime = fromTime + dataSpan/0.7
       const dataSpan=curBarTime-fromTime;
