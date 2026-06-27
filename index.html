@@ -855,31 +855,34 @@ async function fetchOI(){
     Math.abs(s.t-target)<Math.abs(b.t-target)?s:b, snaps[0]);
   const dtMin=Math.round((cur.t-base.t)/60000);
 
-  // Динамический порог по длине окна
-  const thr=10; // фиксированный порог 10% за ~1ч
+  // Порог: 25% основной, 7% фолбэк если ничего нет
+  const THR_PRIMARY=25, THR_FALLBACK=7;
 
   // Сбросить старые OI сигналы
   coins.forEach(co=>delete oiMap[co.symbol]);
 
   let found=0;
-  let candidates=[]; // объявляем ДО if чтобы не было ReferenceError
+  let candidates=[]; // все монеты с ненулевым изменением
   Object.keys(snap.data).forEach(sym=>{
     if(!coins.find(co=>co.symbol===sym))return;
-    const ov=base.data[sym]||0;
-    const cv=snap.data[sym]||0;
+    const ov=base.data[sym]||0, cv=snap.data[sym]||0;
     if(!ov||!cv)return;
     const pct=+((cv-ov)/ov*100).toFixed(1);
-    if(Math.abs(pct)>=thr){oiMap[sym]=pct;found++;}
-    candidates.push({sym,pct:Math.abs(pct)}); // собираем все для фолбэка
+    if(pct!==0)candidates.push({sym,pct});
   });
 
-  // Если никто не достиг порога — показываем топ-10 по изменению
+  // Сначала ищем монеты с ≥25% изменением
+  candidates.forEach(({sym,pct})=>{if(Math.abs(pct)>=THR_PRIMARY){oiMap[sym]=pct;found++;}});
+
+  // Если нет ≥25% — берём все с ≥7%
   if(found===0){
-    candidates.sort((a,b)=>b.pct-a.pct);
-    candidates.slice(0,10).forEach(({sym})=>{
-      const pct=+((snap.data[sym]-(base.data[sym]||snap.data[sym]))/(base.data[sym]||snap.data[sym])*100).toFixed(1);
-      oiMap[sym]=pct; found++;
-    });
+    candidates.forEach(({sym,pct})=>{if(Math.abs(pct)>=THR_FALLBACK){oiMap[sym]=pct;found++;}});
+  }
+
+  // Если всё равно пусто — топ-10 по максимальному изменению
+  if(found===0){
+    candidates.sort((a,b)=>Math.abs(b.pct)-Math.abs(a.pct));
+    candidates.slice(0,10).forEach(({sym,pct})=>{oiMap[sym]=pct;found++;});
   }
   const isTopMode=found>0;
   const modeNote=Object.values(oiMap).some(v=>Math.abs(v)>=thr)?'':`(топ-${found} мин. изм.)`;
