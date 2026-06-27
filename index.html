@@ -803,38 +803,47 @@ async function switchSectionTf(secId,tf){
 
 }
 
-// ── BINGX 24H CHANGE (точнее для трейдинга на BingX) ────────────────────────
+// ── BINGX 24H CHANGE ────────────────────────────────────────────────────────
 async function fetchBingxChg(){
   try{
-    // Один запрос — все перпетуальные пары BingX
-    const BINGX_TICKER='https://open-api.bingx.com/openApi/swap/v2/quote/ticker';
+    const URL='https://open-api.bingx.com/openApi/swap/v2/quote/ticker';
     let j=null;
-    try{j=await fetchAuto(BINGX_TICKER);}catch{}
-    if(!j?.data?.length)return;
+    try{j=await fetchAuto(URL);}catch(e){console.warn('BingX direct:',e.message);}
+    if(!j) try{const r=await fetch(PROXY+encodeURIComponent(URL));j=await r.json();}catch{}
+
+    // BingX может вернуть data как массив ИЛИ data.ticker
+    const arr=Array.isArray(j?.data)?j.data:
+               Array.isArray(j?.data?.ticker)?j.data.ticker:null;
+
+    if(!arr?.length){
+      console.warn('BingX ticker empty:',JSON.stringify(j)?.slice(0,300));
+      return;
+    }
+    console.log(`BingX тикер: ${arr.length} пар, пример:`,JSON.stringify(arr[0])?.slice(0,300));
+
     let updated=0;
-    j.data.forEach(t=>{
-      // BingX: "VELVET-USDT" → MEXC: "VELVETUSDT"
+    arr.forEach(t=>{
       const sym=(t.symbol||'').replace(/-USDT$/,'USDT').replace(/-USD$/,'USDT');
-      // BingX возвращает priceChangePercent как десятичную дробь: 0.9068 = 90.68%
-      // Сначала пробуем priceChangePercent * 100, проверяем также lastPrice и openPrice
-      let pct=parseFloat(t.priceChangePercent||0);
-      // Если значение < 10 — скорее всего десятичная дробь, умножаем на 100
-      // Если >= 10 — уже в процентах
-      if(Math.abs(pct)<10) pct=pct*100;
-      if(!sym||isNaN(pct))return;
-      // Если есть lastPrice и openPrice — вычисляем точнее
+      if(!sym)return;
+      // Приоритет 1: абсолютное priceChange + lastPrice
+      const chg=parseFloat(t.priceChange||0);
       const last=parseFloat(t.lastPrice||0);
-      const open=parseFloat(t.openPrice||0);
-      if(last>0&&open>0) pct=+((last-open)/open*100).toFixed(2);
+      let pct=0;
+      if(last>0&&chg!==0){const prev=last-chg;if(prev>0)pct=+(chg/prev*100).toFixed(2);}
+      // Приоритет 2: priceChangePercent
+      if(pct===0){
+        const raw=parseFloat(t.priceChangePercent||0);
+        if(raw!==0)pct=Math.abs(raw)<=2?+(raw*100).toFixed(2):+raw.toFixed(2);
+      }
+      if(!pct||isNaN(pct))return;
       const coin=coins.find(co=>co.symbol===sym);
       if(coin){coin.priceChangePercent=pct.toFixed(2);updated++;}
     });
-    if(updated>0){
-      console.log(`BingX 24h chg: обновлено ${updated} монет`);
-      renderAll();
-    }
-  }catch(e){console.warn('fetchBingxChg',e.message);}
+    if(updated>0){console.log(`BingX обновил ${updated} монет`);renderAll();}
+    else console.warn('BingX: 0 монет обновлено — проверь поля в консоли');
+  }catch(e){console.error('fetchBingxChg:',e);}
 }
+
 
 async function fetchOI(){
   const el=document.getElementById('st-oi');
