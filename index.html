@@ -803,35 +803,65 @@ async function switchSectionTf(secId,tf){
 
 }
 
-// ── BINGX 24H CHANGE ────────────────────────────────────────────────────────
+// ── 24H CHANGE — MEXC CONTRACT (фьючерсы, точнее для BingX-трейдеров) ────────
 async function fetchBingxChg(){
   try{
-    const URL='https://open-api.bingx.com/openApi/swap/v2/quote/ticker';
-    let j=null;
-    try{j=await fetchAuto(URL);}catch{}
-    if(!j) try{const r=await fetch(PROXY+encodeURIComponent(URL));j=await r.json();}catch{}
-
-    const arr=Array.isArray(j?.data)?j.data:
-               Array.isArray(j?.data?.ticker)?j.data.ticker:null;
-    if(!arr?.length){console.warn('BingX ticker empty');return;}
-
+    // MEXC contract ticker — один запрос, все фьючерсные пары
+    const j=await tFetchJ(`${MEXCC}/ticker`,6000);
+    const arr=Array.isArray(j?.data)?j.data:null;
+    if(!arr?.length){
+      console.warn('MEXC contract ticker empty');
+      // Фолбэк: BingX bulk ticker
+      await fetchBingxChgFallback();
+      return;
+    }
+    console.log(`MEXC contract ticker: ${arr.length} пар, пример:`,JSON.stringify(arr[0])?.slice(0,200));
     let updated=0;
     arr.forEach(t=>{
-      const sym=(t.symbol||'').replace(/-USDT$/,'USDT').replace(/-USD$/,'USDT');
+      // MEXC contract: symbol = "BTC_USDT" → наш формат "BTCUSDT"
+      const sym=(t.symbol||'').replace(/_/g,'');
       if(!sym)return;
-      // Формула: (lastPrice - openPrice) / openPrice * 100
-      // BTC: (60385.2 - 59706.3) / 59706.3 * 100 = 1.14%  ✓
-      // VELVET: (1.1671 - 0.5071) / 0.5071 * 100 = 130.1%  ✓
+      // MEXC contract: changePercent = 0.0114 (за 24ч), нужно * 100
+      // ИЛИ lastPrice + riseFallRate
       const last=parseFloat(t.lastPrice||0);
-      const open=parseFloat(t.openPrice||0);
-      if(!last||!open||open===last)return;
-      const pct=+((last-open)/open*100).toFixed(2);
-      if(isNaN(pct))return;
+      const open=parseFloat(t.fairPrice||t.indexPrice||0); // не подходит
+      // Используем riseFallRate = процент изменения (decimal)
+      let pct=parseFloat(t.riseFallRate||t.changePercent||0)*100;
+      // Если маленький — возможно уже в % (не decimal)
+      if(pct===0&&t.riseFallValue&&last>0){
+        pct=+(parseFloat(t.riseFallValue)/last*100).toFixed(2);
+      }
+      if(!pct||isNaN(pct))return;
       const coin=coins.find(co=>co.symbol===sym);
       if(coin){coin.priceChangePercent=pct.toFixed(2);updated++;}
     });
-    if(updated>0){console.log(`BingX 24h: ${updated} монет обновлено`);renderAll();}
-  }catch(e){console.error('fetchBingxChg:',e);}
+    if(updated>0){console.log(`MEXC contract 24h: ${updated} монет`);renderAll();}
+    else await fetchBingxChgFallback(); // если ничего — BingX
+  }catch(e){console.error('fetchBingxChg:',e);await fetchBingxChgFallback();}
+}
+
+async function fetchBingxChgFallback(){
+  try{
+    // BingX: используем klines чтобы получить цену 24ч назад
+    // Для первых 30 монет по объёму запрашиваем индивидуально
+    const top=coins.slice(0,30);
+    for(let i=0;i<top.length;i+=5){
+      await Promise.all(top.slice(i,i+5).map(async co=>{
+        try{
+          const sym=co.symbol.replace('USDT','-USDT');
+          const kl=await tFetchJ(`https://open-api.bingx.com/openApi/swap/v2/quote/klines?symbol=${sym}&interval=1h&limit=26`,4000);
+          const bars=kl?.data;
+          if(!bars?.length)return;
+          const price24h=parseFloat(bars[0][1]); // open цена бара 24ч назад
+          const priceNow=parseFloat(bars[bars.length-1][4]); // close последнего
+          if(price24h>0&&priceNow>0){
+            co.priceChangePercent=+((priceNow-price24h)/price24h*100).toFixed(2)+'';
+          }
+        }catch{}
+      }));
+    }
+    renderAll();
+  }catch(e){console.warn('BingX fallback:',e.message);}
 }
 
 
