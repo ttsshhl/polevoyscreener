@@ -528,8 +528,11 @@ async function fetchTickers(){
   const all=data.filter(t=>t.symbol.endsWith('USDT')&&!t.symbol.includes('_'));
   coins=all.map(c=>{
     const vol=parseFloat(c.quoteVolume)||0;
-    const chg=Math.abs(parseFloat(c.priceChangePercent)||0);
-    return{...c,rsi:rsiMap[c.symbol]??null,_score:(vol/1e6)+(chg>5?chg*50:chg>2?chg*10:0)};
+    // MEXC возвращает priceChangePercent как дробь: 0.31 = 31% → умножаем на 100
+    const rawPct=parseFloat(c.priceChangePercent||0);
+    const pct100=+(rawPct*100).toFixed(2);
+    const chg=Math.abs(pct100);
+    return{...c,priceChangePercent:String(pct100),rsi:rsiMap[c.symbol]??null,_score:(vol/1e6)+(chg>5?chg*50:chg>2?chg*10:0)};
   }).sort((a,b)=>b._score-a._score).slice(0,250);
   document.getElementById('dot').style.background='#a3e635';
   document.getElementById('upd').textContent=new Date().toLocaleTimeString('ru');
