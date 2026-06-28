@@ -806,39 +806,46 @@ async function switchSectionTf(secId,tf){
 // ── 24H CHANGE ──────────────────────────────────────────────────────────────
 async function fetchBingxChg(){
   const coveredSyms=new Set();
-
-  // ШАГ 1: MEXC Contract ticker — один запрос, 148+ монет
   try{
     const j=await tFetchJ(`${MEXCC}/ticker`,8000);
     (Array.isArray(j?.data)?j.data:[]).forEach(t=>{
       const sym=(t.symbol||'').replace('_','');
       const coin=coins.find(co=>co.symbol===sym);
-      if(!coin||t.riseFallRate==null)return;
-      coin.priceChangePercent=+(parseFloat(t.riseFallRate)*100).toFixed(2)+'';
-      coveredSyms.add(sym);
+      if(!coin)return;
+      const last=parseFloat(t.lastPrice||0);
+      const val=parseFloat(t.riseFallValue||0); // абсолютное изменение цены
+      // riseFallValue = -42 для BTC → prev=60308 → -42/60308*100 = -0.07% ✓
+      if(last>0&&val!==0){
+        const prev=last-val;
+        if(prev>0){
+          const pct=+(val/prev*100).toFixed(2);
+          // Используем toFixed(2) с минимум 2 знаками — не теряем малые значения
+          coin.priceChangePercent=pct+'';
+          coveredSyms.add(sym);
+        }
+      }
     });
     if(coveredSyms.size>0)renderAll();
-  }catch(e){}
+  }catch(e){console.error('24h MEXC:',e.message);}
 
-  // ШАГ 2: Оставшиеся монеты — BingX klines через прокси (Sequential)
+  // Оставшиеся монеты — BingX klines через прокси
   const missing=coins.filter(co=>!coveredSyms.has(co.symbol));
   for(const co of missing){
     try{
       const sym=co.symbol.replace('USDT','-USDT');
       const j=await fetchAuto(`https://open-api.bingx.com/openApi/swap/v2/quote/klines?symbol=${sym}&interval=1h&limit=26`);
       const bars=Array.isArray(j)?j:Array.isArray(j?.data)?j.data:null;
-      if(!bars||bars.length<2){await new Promise(r=>setTimeout(r,80));continue;}
-      // Старый бар (25ч назад) и новый (сейчас) по timestamp
-      const getT=b=>parseFloat(b?.time??b?.openTime??b?.[0]??0);
-      const sorted=getT(bars[0])<getT(bars[bars.length-1])?bars:[...bars].reverse();
-      const old=sorted[0],cur=sorted[sorted.length-1];
-      const p24=parseFloat(old?.open??old?.[1]??0);
-      const pNow=parseFloat(cur?.close??cur?.[4]??0);
-      if(p24>0&&pNow>0)co.priceChangePercent=+((pNow-p24)/p24*100).toFixed(2)+'';
+      if(bars?.length>=2){
+        const getT=b=>parseFloat(b?.time??b?.[0]??0);
+        const sorted=getT(bars[0])<getT(bars[bars.length-1])?bars:[...bars].reverse();
+        const p24=parseFloat(sorted[0]?.open??sorted[0]?.[1]??0);
+        const pNow=parseFloat(sorted[sorted.length-1]?.close??sorted[sorted.length-1]?.[4]??0);
+        if(p24>0&&pNow>0)co.priceChangePercent=+((pNow-p24)/p24*100).toFixed(2)+'';
+      }
     }catch{}
     await new Promise(r=>setTimeout(r,80));
   }
-  renderAll();
+  if(missing.length>0)renderAll();
 }
 
 
